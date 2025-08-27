@@ -1,0 +1,60 @@
+@model List<HealthCareApp.Models.Feedback>
+@{
+    ViewData["Title"] = "Leave Feedback";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="h3 mb-4 text-gray-800">📝 Leave Feedback</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Feedback Form</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label for="doctor" class="form-label">Doctor/Service</label>
+                            <input type="text" class="form-control" id="doctor" name="doctor" placeholder="Doctor name or service...">
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Your Feedback</label>
+                            <textarea class="form-control" id="message" name="message" rows="4" placeholder="Write your feedback or message..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Submit Feedback
+                        </button>
+                    </form>
+                    <hr />
+                    <h6 class="mt-4 mb-3">Your Submitted Feedback</h6>
+                    @if (Model != null && Model.Any())
+                    {
+                        <div class="list-group">
+                            @foreach (var fb in Model)
+                            {
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">@fb.FeedbackDate.ToString("yyyy-MM-dd HH:mm")</h6>
+                                    </div>
+                                    <p class="mb-1">@fb.Comments</p>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p>No feedback submitted yet.</p>
+                            <small>Your submitted feedback will appear here after you send a message.</small>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

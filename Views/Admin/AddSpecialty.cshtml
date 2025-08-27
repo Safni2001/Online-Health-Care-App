@@ -1,0 +1,52 @@
+@model HealthCareApp.Controllers.AdminController.SpecialtyViewModel
+@{
+    ViewData["Title"] = "Add Specialty";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 text-gray-800">➕ Add Specialty</h1>
+                <a href="@Url.Action("ManageSpecialties", "Admin")" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Specialties
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Specialty Information</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="AddSpecialty" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="mb-3">
+                            <label asp-for="SpecialtyName" class="form-label">Specialty Name *</label>
+                            <input asp-for="SpecialtyName" class="form-control" />
+                            <span asp-validation-for="SpecialtyName" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="@Url.Action("ManageSpecialties", "Admin")" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Add Specialty
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

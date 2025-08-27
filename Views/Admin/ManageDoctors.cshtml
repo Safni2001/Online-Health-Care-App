@@ -1,0 +1,145 @@
+@model List<HealthCareApp.Models.Doctor>
+@{
+    ViewData["Title"] = "Manage Doctors";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 text-gray-800">👨‍⚕️ Manage Doctors</h1>
+                <a href="@Url.Action("AddDoctor", "Admin")" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Doctor
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Doctors Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">All Doctors</h6>
+        </div>
+        <div class="card-body">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="doctorsTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Specialty</th>
+                                <th>Location</th>
+                                <th>Contact</th>
+                                <th>Available Time</th>
+                                <th>Fees</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var doctor in Model)
+                            {
+                                <tr>
+                                    <td>@doctor.DoctorID</td>
+                                    <td>@doctor.Name</td>
+                                    <td>@doctor.User?.Username</td>
+                                    <td>@doctor.Specialty?.SpecialtyName</td>
+                                    <td>@doctor.Location?.LocationName</td>
+                                    <td>@doctor.ContactNo</td>
+                                    <td>@doctor.AvailableTime</td>
+                                    <td>$@doctor.Fees.ToString("F2")</td>
+                                    <td>
+                                        @if (doctor.User?.IsActive == true)
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Inactive</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            @if (doctor.User?.IsActive == true)
+                                            {
+                                                <form asp-action="DeactivateDoctor" method="post" style="display: inline;">
+                                                    <input type="hidden" name="doctorId" value="@doctor.DoctorID" />
+                                                    <button type="submit" class="btn btn-warning btn-sm" 
+                                                            onclick="return confirm('Are you sure you want to deactivate this doctor?')">
+                                                        <i class="fas fa-user-slash"></i> Deactivate
+                                                    </button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <form asp-action="ActivateDoctor" method="post" style="display: inline;">
+                                                    <input type="hidden" name="doctorId" value="@doctor.DoctorID" />
+                                                    <button type="submit" class="btn btn-success btn-sm">
+                                                        <i class="fas fa-user-check"></i> Activate
+                                                    </button>
+                                                </form>
+                                            }
+                                            <a asp-action="EditDoctor" asp-route-doctorId="@doctor.DoctorID" class="btn btn-info btn-sm">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            <form asp-action="DeleteDoctor" method="post" style="display: inline;">
+                                                <input type="hidden" name="doctorId" value="@doctor.DoctorID" />
+                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to permanently delete this doctor? This cannot be undone.');">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-user-md fa-3x mb-3"></i>
+                    <p>No doctors found</p>
+                    <small>Add your first doctor to get started</small>
+                    <br>
+                    <a href="@Url.Action("AddDoctor", "Admin")" class="btn btn-primary mt-3">
+                        Add First Doctor
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#doctorsTable').DataTable({
+                "pageLength": 10,
+                "order": [[0, "desc"]],
+                "responsive": true
+            });
+        });
+    </script>
+}

@@ -1,0 +1,193 @@
+@{
+    ViewData["Title"] = "Patient Dashboard";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="h3 mb-4 text-gray-800">👤 Patient Dashboard</h1>
+        </div>
+    </div>
+
+    <!-- Welcome Message -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Welcome, @Context.Session.GetString("Username")!</h5>
+                    <p class="card-text">Manage your health appointments and medical records from your personal dashboard.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <!-- <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Upcoming Appointments
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.UpcomingAppointments</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-check fa-2x text-gray-300">📅</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Appointments
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalAppointments</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300">📋</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Medical Records
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.MedicalRecords</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-file-medical fa-2x text-gray-300">📄</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pending Payments
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.PendingPayments</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-credit-card fa-2x text-gray-300">💳</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <a href="@Url.Action("FindDoctors", "Patient")" class="btn btn-primary btn-block">
+                                <i class="fas fa-search"></i> Find Doctors
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="@Url.Action("BookAppointment", "Patient")" class="btn btn-success btn-block">
+                                <i class="fas fa-plus"></i> Book Appointment
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="@Url.Action("MyAppointments", "Patient")" class="btn btn-info btn-block">
+                                <i class="fas fa-calendar"></i> My Appointments
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="@Url.Action("MedicalRecords", "Patient")" class="btn btn-warning btn-block">
+                                <i class="fas fa-file-medical"></i> Medical Records
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="@Url.Action("PayFees", "Patient")" class="btn btn-warning btn-block">
+                                <i class="fas fa-credit-card"></i> Pay Fees
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="@Url.Action("Feedback", "Patient")" class="btn btn-secondary btn-block">
+                                <i class="fas fa-comment-dots"></i> Leave Feedback
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Appointments and Health Tips -->
+    <!-- <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Upcoming Appointments</h6>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.UpcomingAppointments > 0)
+                    {
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> You have @ViewBag.UpcomingAppointments upcoming appointment(s).
+                            <a href="@Url.Action("MyAppointments", "Patient")" class="btn btn-primary btn-sm ms-2">View All</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                            <p>No upcoming appointments</p>
+                            <small>Book your first appointment to get started</small>
+                            <br>
+                            <a href="@Url.Action("BookAppointment", "Patient")" class="btn btn-primary mt-3">
+                                Book Appointment Now
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div> -->
+
+        <!-- <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Health Tips</h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6>💡 Daily Health Tip</h6>
+                        <p class="mb-0">Stay hydrated! Drink at least 8 glasses of water daily for optimal health.</p>
+                    </div>
+                    <div class="alert alert-success">
+                        <h6>✅ Wellness Reminder</h6>
+                        <p class="mb-0">Don't forget to schedule your annual checkup for preventive care.</p>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+    </div>
+</div>

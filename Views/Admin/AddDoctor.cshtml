@@ -1,0 +1,129 @@
+@model HealthCareApp.Controllers.AddDoctorViewModel
+@{
+    ViewData["Title"] = "Add New Doctor";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 text-gray-800">👨‍⚕️ Add New Doctor</h1>
+                <a href="@Url.Action("ManageDoctors", "Admin")" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Doctors
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Doctor Information</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="AddDoctor" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        
+                        <!-- Personal Information -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Name" class="form-label">Doctor Name *</label>
+                                <input asp-for="Name" class="form-control" placeholder="Enter doctor's full name" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Username" class="form-label">Username *</label>
+                                <input asp-for="Username" class="form-control" placeholder="Choose a username" />
+                                <span asp-validation-for="Username" class="text-danger"></span>
+                                <small class="form-text text-muted">This will be the login username</small>
+                            </div>
+                        </div>
+
+                        <!-- Account Information -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Password" class="form-label">Password *</label>
+                                <input asp-for="Password" type="password" class="form-control" placeholder="Choose a password" />
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                                <small class="form-text text-muted">Minimum 6 characters</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="ContactNo" class="form-label">Contact Number</label>
+                                <input asp-for="ContactNo" class="form-control" placeholder="Phone number" />
+                                <span asp-validation-for="ContactNo" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Professional Information -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="SpecialID" class="form-label">Specialty *</label>
+                                <select asp-for="SpecialID" class="form-select" asp-items="@(new SelectList(ViewBag.Specialties, "SpecialID", "SpecialtyName"))">
+                                    <option value="">Select Specialty</option>
+                                </select>
+                                <span asp-validation-for="SpecialID" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="LocationID" class="form-label">Location</label>
+                                <select asp-for="LocationID" class="form-select" asp-items="@(new SelectList(ViewBag.Locations, "LocationID", "LocationName"))">
+                                    <option value="">Select Location</option>
+                                </select>
+                                <span asp-validation-for="LocationID" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Schedule and Fees -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="AvailableTime" class="form-label">Available Time</label>
+                                <input asp-for="AvailableTime" class="form-control" placeholder="e.g., 9:00 AM - 5:00 PM" />
+                                <span asp-validation-for="AvailableTime" class="text-danger"></span>
+                                <small class="form-text text-muted">Working hours</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Fees" class="form-label">Consultation Fees *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input asp-for="Fees" class="form-control" placeholder="0.00" />
+                                </div>
+                                <span asp-validation-for="Fees" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a href="@Url.Action("ManageDoctors", "Admin")" class="btn btn-secondary">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Add Doctor
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Auto-generate username from doctor name
+        $('#Name').on('input', function() {
+            var name = $(this).val();
+            if (name) {
+                var username = name.toLowerCase()
+                    .replace(/[^a-z0-9]/g, '')
+                    .substring(0, 20);
+                $('#Username').val(username);
+            }
+        });
+    </script>
+}

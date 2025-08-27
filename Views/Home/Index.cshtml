@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to HealthCare Management App</h1>
+    
+    @if (ViewBag.DbStatus != null)
+    {
+        var dbStatus = ViewBag.DbStatus;
+        <div class="alert @(dbStatus.IsConnected ? "alert-success" : "alert-danger") mt-4" role="alert">
+            <h4 class="alert-heading">@(dbStatus.IsConnected ? "🎉 Success!" : "⚠️ Warning!")</h4>
+            <p>@dbStatus.Message</p>
+            @if (dbStatus.IsConnected && !string.IsNullOrEmpty(dbStatus.ConnectionString))
+            {
+                <hr>
+                <p class="mb-0"><strong>Database:</strong> @dbStatus.ConnectionString</p>
+            }
+        </div>
+    }
+    
+    <p class="mt-4">Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>

@@ -1,0 +1,84 @@
+@model List<HealthCareApp.Models.Appointment>
+@{
+    ViewData["Title"] = "My Appointments";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="h3 mb-4 text-gray-800">📅 My Appointments</h1>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Appointment Schedule</h6>
+        </div>
+        <div class="card-body">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Patient</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var appt in Model)
+                            {
+                                <tr>
+                                    <td>@appt.AppointmentDate.ToString("yyyy-MM-dd")</td>
+                                    <td>@(appt.AppointmentTime)</td>
+                                    <td>@appt.Patient?.Name</td>
+                                    <td>@appt.Location?.LocationName</td>
+                                    <td>
+                                        @if (appt.IsCancelled)
+                                        {
+                                            <span class="badge bg-primary">Confirmed</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @if (!appt.IsCancelled)
+                                            {
+                                                <form asp-action="ConfirmAppointment" method="post" class="d-inline">
+                                                    <input type="hidden" name="appointmentId" value="@appt.AppointmentID" />
+                                                    <button type="submit" class="btn btn-sm btn-success">Confirm</button>
+                                                </form>
+                                            }
+                                            @if (appt.IsCancelled)
+                                            {
+                                                <form asp-action="CancelAppointment" method="post" class="d-inline">
+                                                    <input type="hidden" name="appointmentId" value="@appt.AppointmentID" />
+                                                    <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                                                </form>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                    <p>No appointments scheduled</p>
+                    <small>Appointments will appear here when patients book with you</small>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,92 @@
+@model List<HealthCareApp.Models.Doctor>
+@{
+    ViewData["Title"] = "Find Doctors";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="h3 mb-4 text-gray-800">🔍 Find Doctors</h1>
+        </div>
+    </div>
+
+    <!-- Search Filters -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Search Filters</h6>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Specialty</label>
+                    <input type="text" name="specialty" class="form-control" placeholder="e.g., Cardiology" value="@Context.Request.Query["specialty"]" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Location</label>
+                    <input type="text" name="location" class="form-control" placeholder="e.g., Main Clinic" value="@Context.Request.Query["location"]" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Search by Name</label>
+                    <input type="text" name="search" class="form-control" placeholder="Doctor name..." value="@Context.Request.Query["search"]" />
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Search Doctors
+                    </button>
+                    <a href="@Url.Action("FindDoctors", "Patient")" class="btn btn-secondary">
+                        <i class="fas fa-refresh"></i> Clear Filters
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Doctors List -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Available Doctors</h6>
+        </div>
+        <div class="card-body">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Specialty</th>
+                                <th>Location</th>
+                                <th>Available</th>
+                                <th>Fees</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var d in Model)
+                            {
+                                <tr>
+                                    <td>@d.Name</td>
+                                    <td>@d.Specialty?.SpecialtyName</td>
+                                    <td>@d.Location?.LocationName</td>
+                                    <td>@d.AvailableTime</td>
+                                    <td>$@d.Fees</td>
+                                    <td>
+                                        <a class="btn btn-sm btn-success" href="@Url.Action("BookAppointment", "Patient", new { doctorId = d.DoctorID })">Book</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-user-md fa-3x mb-3"></i>
+                    <p>No doctors found</p>
+                    <small>Use the search filters above to find available doctors</small>
+                </div>
+            }
+        </div>
+    </div>
+</div>

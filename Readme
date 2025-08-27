@@ -1,0 +1,454 @@
+# HealthCare Management System - Complete Development Guide for Cursor AI
+
+## 🎯 PROJECT OVERVIEW
+
+Develop a complete Healthcare Management System using ASP.NET Core MVC with SQL Server. The system has three user types: Admin, Doctor, and Patient with role-based access control.
+
+## 📊 DATABASE STRUCTURE
+
+```sql
+-- Main Tables:
+- Users (UserID, Username, Password, UserType, IsActive)
+- Admins (AdminID, UserID, Name, Email, Contact)
+- Doctors (DoctorID, UserID, Name, LocationID, ContactNo, SpecialID, AvailableTime, Fees)
+- Patients (PatientID, UserID, Name, Address, PhoneNo)
+- Specialties (SpecialID, SpecialtyName, Description)
+- Locations (LocationID, LocationName, Description)
+- Appointments (AppointmentID, PatientID, LocationID, DoctorID, AppointmentDate, AppointmentTime, IsCancelled)
+- Payments (PaymentID, BookingRef, PatientID, Amount, PaymentStatus, PaymentDate)
+- MedicalHistory (HistoryID, PatientID, RecordDate, Notes, Medicine, DoctorID)
+- Feedback (FeedbackID, PatientID, DoctorID, AppointmentID, Rating, Comments)
+```
+
+## 🏗️ SYSTEM ARCHITECTURE
+
+### **Technology Stack:**
+
+- **Backend:** ASP.NET Core 8.0 MVC
+- **Database:** SQL Server with Entity Framework Core
+- **Frontend:** Bootstrap 5, jQuery, HTML5, CSS3
+- **Authentication:** ASP.NET Core Identity (Custom Implementation)
+- **Session Management:** In-memory sessions
+
+### **Project Structure:**
+
+```
+HealthCareManagementSystem/
+├── Controllers/
+├── Models/
+├── Views/
+│   ├── Shared/
+│   ├── Account/
+│   ├── Admin/
+│   ├── Doctor/
+│   └── Patient/
+├── Data/
+├── Services/
+├── wwwroot/
+│   ├── css/
+│   ├── js/
+│   └── images/
+└── appsettings.json
+```
+
+## 🔐 AUTHENTICATION & AUTHORIZATION SYSTEM
+
+### **A. User Authentication:**
+
+1. **Login System:**
+
+   - Single login form for all user types
+   - Validate against Users table using stored procedure `sp_UserLogin`
+   - Set session variables: UserID, Username, UserType
+   - Redirect based on UserType (Admin → AdminIndex, Doctor → DoctorDashboard, Patient → PatientDashboard)
+
+2. **Registration System:**
+
+   - Patient self-registration only
+   - Admin creates Doctor and Admin accounts
+   - Hash passwords using BCrypt
+   - Auto-create entries in respective tables (Admins/Doctors/Patients)
+
+3. **Session Management:**
+
+   - Check user authentication in all controllers
+   - Implement custom [Authorize] attributes for each user type
+   - Auto-logout after inactivity (30 minutes)
+
+4. **Logout System:**
+   - Clear all session data
+   - Redirect to login page
+
+## 👨‍💼 ADMIN FUNCTIONALITY (A-Z)
+
+### **A. Admin Dashboard:**
+
+- Display system statistics (total users, appointments, revenue)
+- Show recent appointments and activities
+- Quick action buttons for common tasks
+
+### **B. User Management:**
+
+- **Add Doctor:**
+
+  - Form: Name, Email, Contact, Specialty, Location, Available Time, Fees
+  - Create User entry first, then Doctor profile
+  - Upload profile image (optional)
+
+- **Manage Doctors:**
+
+  - List all doctors with search/filter by specialty
+  - Edit doctor profiles and availability
+  - Activate/Deactivate doctor accounts
+  - View doctor's appointment history
+
+- **Manage Patients:**
+  - View all registered patients
+  - Search patients by name/phone
+  - View patient medical history
+  - Activate/Deactivate patient accounts
+
+### **C. Appointment Management:**
+
+- **View All Appointments:**
+
+  - Calendar view and list view options
+  - Filter by date, doctor, patient, status
+  - Bulk operations (confirm, cancel multiple appointments)
+
+- **Appointment Analytics:**
+  - Daily/Weekly/Monthly appointment reports
+  - Doctor-wise appointment statistics
+  - Cancel/No-show rate analysis
+
+### **D. Financial Management:**
+
+- **Payment Reports:**
+
+  - Revenue by date, doctor, specialty
+  - Outstanding payments tracking
+  - Payment method analytics
+
+- **Doctor Fee Management:**
+  - Update consultation fees
+  - Set promotional pricing
+  - Fee history tracking
+
+### **E. System Configuration:**
+
+- **Specialty Management:**
+
+  - Add/Edit/Delete medical specialties
+  - Assign specialties to doctors
+
+- **Location Management:**
+
+  - Add/Edit clinic locations
+  - Assign doctors to locations
+
+- **Feedback Management:**
+  - View all patient feedback
+  - Respond to complaints
+  - Generate satisfaction reports
+
+## 👨‍⚕️ DOCTOR FUNCTIONALITY (A-Z)
+
+### **A. Doctor Dashboard:**
+
+- Today's appointment schedule
+- Pending appointments requiring confirmation
+- Recent patient feedback/ratings
+- Personal statistics (total patients, revenue)
+
+### **B. Profile Management:**
+
+- **Update Profile:**
+  - Edit personal information, availability hours
+  - Update consultation fees
+  - Upload/change profile picture
+  - Set vacation/unavailable dates
+
+### **C. Appointment Management:**
+
+- **View Appointments:**
+
+  - Calendar view of all appointments
+  - Filter by date range, status
+  - Search appointments by patient name
+
+- **Appointment Actions:**
+  - Confirm pending appointments
+  - Reschedule appointments
+  - Cancel appointments with reason
+  - Mark appointments as completed
+
+### **D. Patient Management:**
+
+- **View Patients:**
+
+  - List of all patients who booked appointments
+  - Search patients by name
+  - View patient appointment history
+
+- **Medical Records:**
+  - Add consultation notes after appointments
+  - Prescribe medications
+  - View patient's medical history
+  - Upload test reports/documents
+
+### **E. Schedule Management:**
+
+- **Availability Settings:**
+  - Set working hours by day of week
+  - Block specific dates/times
+  - Set appointment slot duration
+
+### **F. Communication:**
+
+- **Patient Messages:**
+  - View messages from patients
+  - Send appointment reminders
+  - Post-consultation follow-ups
+
+## 👤 PATIENT FUNCTIONALITY (A-Z)
+
+### **A. Patient Dashboard:**
+
+- Upcoming appointments
+- Recent medical records
+- Quick book appointment button
+- Health tips and announcements
+
+### **B. Doctor Search & Booking:**
+
+- **Find Doctors:**
+
+  - Search by specialty, location, name
+  - Filter by availability, fees, ratings
+  - View doctor profiles, qualifications, reviews
+
+- **Book Appointment:**
+  - Select doctor and available time slots
+  - Choose location (if doctor works at multiple)
+  - Add symptoms/reason for visit
+  - Confirm booking details
+
+### **C. Appointment Management:**
+
+- **My Appointments:**
+
+  - View upcoming appointments
+  - Reschedule appointments (if allowed)
+  - Cancel appointments
+  - Download appointment confirmations
+
+- **Appointment History:**
+  - Past consultation records
+  - Download medical reports
+  - Repeat bookings with same doctor
+
+### **D. Profile Management:**
+
+- **Update Profile:**
+  - Personal information, contact details
+  - Emergency contact information
+  - Medical history, allergies
+  - Insurance information
+
+### **E. Payment Management:**
+
+- **Online Payments:**
+  - Pay consultation fees
+  - Payment history
+  - Download payment receipts
+  - Set up payment reminders
+
+### **F. Medical Records:**
+
+- **Health Records:**
+  - View consultation notes
+  - Download prescriptions
+  - Track medication history
+  - Upload test reports
+
+### **G. Feedback System:**
+
+- **Rate Doctors:**
+  - Rate consultation experience (1-5 stars)
+  - Write detailed reviews
+  - Report issues or complaints
+  - View own feedback history
+
+## 🔧 TECHNICAL IMPLEMENTATION DETAILS
+
+### **1. Models (Create these Entity Classes):**
+
+```csharp
+// User Models
+public class User { UserID, Username, Password, UserType, IsActive, CreatedDate }
+public class Admin { AdminID, UserID, Name, Email, Contact, User }
+public class Doctor { DoctorID, UserID, Name, LocationID, ContactNo, SpecialID, AvailableTime, Fees, User, Specialty, Location }
+public class Patient { PatientID, UserID, Name, Address, PhoneNo, User }
+
+// System Models
+public class Specialty { SpecialID, SpecialtyName, Description }
+public class Location { LocationID, LocationName, Description }
+public class Appointment { AppointmentID, PatientID, LocationID, DoctorID, AppointmentDate, AppointmentTime, IsCancelled, Patient, Doctor, Location }
+public class Payment { PaymentID, BookingRef, PatientID, Amount, PaymentStatus, PaymentDate, Patient }
+public class MedicalHistory { HistoryID, PatientID, RecordDate, Notes, Medicine, DoctorID, Patient, Doctor }
+public class Feedback { FeedbackID, PatientID, DoctorID, AppointmentID, Rating, Comments, FeedbackDate, Patient, Doctor, Appointment }
+```
+
+### **2. Controllers to Create:**
+
+```csharp
+- AccountController (Login, Register, Logout)
+- AdminController (Dashboard, UserManagement, Reports)
+- DoctorController (Dashboard, Appointments, Patients)
+- PatientController (Dashboard, Booking, Appointments)
+- HomeController (Public pages, About, Contact)
+```
+
+### **3. Services to Implement:**
+
+```csharp
+- IUserService (Authentication, User Management)
+- IAppointmentService (Booking, Scheduling)
+- IPaymentService (Payment Processing)
+- IEmailService (Notifications, Confirmations)
+- IReportService (Analytics, Reports)
+```
+
+### **4. Database Context:**
+
+```csharp
+public class HealthCareDbContext : DbContext
+{
+    public DbSet<User> Users { get; set; }
+    public DbSet<Admin> Admins { get; set; }
+    public DbSet<Doctor> Doctors { get; set; }
+    public DbSet<Patient> Patients { get; set; }
+    // ... other DbSets
+}
+```
+
+## 🎨 UI/UX REQUIREMENTS
+
+### **Design Guidelines:**
+
+- **Responsive Design:** Bootstrap 5 grid system
+- **Color Scheme:** Medical theme (blues, whites, greens)
+- **Navigation:** Different navbar for each user type
+- **Forms:** Client-side validation with jQuery
+- **Tables:** DataTables for sorting, pagination, search
+- **Notifications:** Toast notifications for success/error messages
+
+### **Key Views to Create:**
+
+**Shared Views:**
+
+- `_Layout.cshtml` (Main layout with navigation)
+- `_AdminLayout.cshtml` (Admin-specific layout)
+- `_DoctorLayout.cshtml` (Doctor-specific layout)
+- `_PatientLayout.cshtml` (Patient-specific layout)
+
+**Account Views:**
+
+- `Login.cshtml` (Universal login form)
+- `Register.cshtml` (Patient registration)
+- `ForgotPassword.cshtml`
+
+**Admin Views:**
+
+- `Index.cshtml` (Dashboard with statistics)
+- `ManageDoctors.cshtml` (Doctor list and management)
+- `ManagePatients.cshtml` (Patient list and management)
+- `AddDoctor.cshtml` (Add new doctor form)
+- `Reports.cshtml` (Financial and appointment reports)
+
+**Doctor Views:**
+
+- `Index.cshtml` (Doctor dashboard)
+- `Appointments.cshtml` (Appointment calendar/list)
+- `Patients.cshtml` (Patient list and medical records)
+- `Profile.cshtml` (Update doctor profile)
+- `Schedule.cshtml` (Manage availability)
+
+**Patient Views:**
+
+- `Index.cshtml` (Patient dashboard)
+- `FindDoctors.cshtml` (Doctor search with filters)
+- `BookAppointment.cshtml` (Appointment booking form)
+- `MyAppointments.cshtml` (Appointment history)
+- `MedicalRecords.cshtml` (Health records)
+- `Profile.cshtml` (Update patient profile)
+
+## 🚀 DEVELOPMENT PHASES
+
+### **Phase 1: Core Setup**
+
+1. Create ASP.NET Core MVC project
+2. Set up Entity Framework and database connection
+3. Create all model classes
+4. Implement authentication system
+5. Create basic layouts and navigation
+
+### **Phase 2: User Management**
+
+1. Implement login/logout functionality
+2. Create user registration (patients only)
+3. Admin user management (add/edit doctors)
+4. Role-based authorization
+
+### **Phase 3: Appointment System**
+
+1. Doctor search and filtering
+2. Appointment booking system
+3. Appointment management for all user types
+4. Calendar integration
+
+### **Phase 4: Advanced Features**
+
+1. Payment system integration
+2. Medical records management
+3. Feedback and rating system
+4. Reporting and analytics
+
+### **Phase 5: Polish & Testing**
+
+1. UI/UX improvements
+2. Performance optimization
+3. Security hardening
+4. Testing and bug fixes
+
+## 🔒 SECURITY CONSIDERATIONS
+
+1. **Password Security:** Hash passwords with BCrypt
+2. **SQL Injection:** Use parameterized queries/EF Core
+3. **XSS Protection:** Encode all user inputs
+4. **CSRF Protection:** Use anti-forgery tokens
+5. **Session Security:** Set secure session cookies
+6. **Authorization:** Check user permissions on every action
+7. **File Upload:** Validate and sanitize uploaded files
+
+## 📝 SAMPLE LOGIN CREDENTIALS
+
+```
+ADMIN: admin1 / admin123
+DOCTOR: dr.smith / doc123
+PATIENT: john.doe / pat123
+```
+
+## 🎯 SUCCESS CRITERIA
+
+- All three user types can login and access their respective dashboards
+- Patients can search for doctors and book appointments
+- Doctors can manage their appointments and patient records
+- Admins can manage the entire system and generate reports
+- System is responsive and works on all devices
+- All CRUD operations work correctly with the database
+- Security measures are properly implemented
+
+---
+
+**Start with Phase 1 and implement each feature incrementally. Test thoroughly after each phase before moving to the next. Focus on getting the core functionality working first, then add advanced features.**

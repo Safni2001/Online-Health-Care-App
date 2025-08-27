@@ -1,0 +1,57 @@
+@model List<HealthCareApp.Models.MedicalHistory>
+@{
+    ViewData["Title"] = "Medical Records";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="h3 mb-4 text-gray-800">📄 Medical Records</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Your Medical History</h6>
+                </div>
+                <div class="card-body">
+                    @if (Model != null && Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Doctor</th>
+                                        <th>Notes</th>
+                                        <th>Prescription</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var r in Model)
+                                    {
+                                        <tr>
+                                            <td>@r.RecordDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                            <td>@r.Doctor?.Name</td>
+                                            <td>@r.Notes</td>
+                                            <td>@r.Medicine</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-file-medical fa-3x mb-3"></i>
+                            <p>No medical records found.</p>
+                            <small>Your medical history will appear here after your appointments and treatments.</small>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,127 @@
+@model HealthCareApp.Controllers.BookAppointmentViewModel
+@{
+    ViewData["Title"] = "Book Appointment";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="h3 mb-4 text-gray-800">📅 Book Appointment</h1>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Appointment Details</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="BookAppointment" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="mb-3">
+                            <label for="doctorDropdown" class="form-label">Doctor *</label>
+                            <select asp-for="DoctorID" class="form-control" id="doctorDropdown" name="DoctorID">
+                                <option value="">-- Select Doctor --</option>
+                                @if (ViewBag.Doctors != null)
+                                {
+                                    foreach (var doc in ViewBag.Doctors)
+                                    {
+                                        <option value="@doc.DoctorID" data-available="@doc.AvailableTime" data-location="@doc.Location?.LocationID" data-fee="@doc.Fees">@doc.Name</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="DoctorID" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3" id="doctorAvailableTime" style="display:none;">
+                            <label class="form-label">Available Time:</label>
+                            <div id="availableTimeText" class="fw-bold"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Doctor Fee:</label>
+                            <div id="doctorFeeText" class="fw-bold">-</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="payNowAmount" class="form-label">Pay Now Amount</label>
+                            <input type="number" step="0.01" min="0" class="form-control" id="payNowAmount" name="PayNowAmount" placeholder="Enter amount to pay now" />
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="payNow" name="PayNow">
+                            <label class="form-check-label" for="payNow">Pay Now</label>
+                        </div>
+                        <div class="mb-3">
+                            <label for="locationDropdown" class="form-label">Location</label>
+                            <select asp-for="LocationID" class="form-control" id="locationDropdown" name="LocationID">
+                                <option value="">-- Select Location --</option>
+                                @if (ViewBag.Doctors != null)
+                                {
+                                    foreach (var doc in ViewBag.Doctors)
+                                    {
+                                        if (doc.Location != null)
+                                        {
+                                            <option value="@doc.Location.LocationID">@doc.Location.LocationName</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="LocationID" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="AppointmentDate" class="form-label">Date *</label>
+                            <input asp-for="AppointmentDate" class="form-control" type="date" />
+                            <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="AppointmentTime" class="form-label">Time *</label>
+                            <input asp-for="AppointmentTime" class="form-control" type="time" />
+                            <span asp-validation-for="AppointmentTime" class="text-danger"></span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="@Url.Action("Index", "Patient")" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Book Appointment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var doctorDropdown = document.getElementById('doctorDropdown');
+            var availableTimeDiv = document.getElementById('doctorAvailableTime');
+            var availableTimeText = document.getElementById('availableTimeText');
+            var locationDropdown = document.getElementById('locationDropdown');
+            var doctorFeeText = document.getElementById('doctorFeeText');
+            doctorDropdown.addEventListener('change', function() {
+                var selected = doctorDropdown.options[doctorDropdown.selectedIndex];
+                var available = selected.getAttribute('data-available');
+                var locationId = selected.getAttribute('data-location');
+                var fee = selected.getAttribute('data-fee');
+                if (available && available.trim() !== '') {
+                    availableTimeText.textContent = available;
+                    availableTimeDiv.style.display = 'block';
+                } else {
+                    availableTimeText.textContent = '';
+                    availableTimeDiv.style.display = 'none';
+                }
+                if (locationId && locationId !== "null") {
+                    for (var i = 0; i < locationDropdown.options.length; i++) {
+                        if (locationDropdown.options[i].value === locationId) {
+                            locationDropdown.selectedIndex = i;
+                            break;
+                        }
+                    }
+                } else {
+                    locationDropdown.selectedIndex = 0;
+                }
+                doctorFeeText.textContent = fee ? ('$' + fee) : '-';
+            });
+        });
+    </script>
+}

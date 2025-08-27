@@ -1,0 +1,99 @@
+@model HealthCareApp.Controllers.AdminController.EditDoctorViewModel
+@{
+    ViewData["Title"] = "Edit Doctor";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 text-gray-800">✏️ Edit Doctor</h1>
+                <a href="@Url.Action("ManageDoctors", "Admin")" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Doctors
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Doctor Information</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="EditDoctor" method="post">
+                        <input type="hidden" asp-for="DoctorID" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Name" class="form-label">Doctor Name *</label>
+                                <input asp-for="Name" class="form-control" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Username" class="form-label">Username *</label>
+                                <input asp-for="Username" class="form-control" />
+                                <span asp-validation-for="Username" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="SpecialID" class="form-label">Specialty *</label>
+                                <select asp-for="SpecialID" class="form-select" asp-items="@(new SelectList(ViewBag.Specialties, "SpecialID", "SpecialtyName", Model.SpecialID))">
+                                    <option value="">Select Specialty</option>
+                                </select>
+                                <span asp-validation-for="SpecialID" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="LocationID" class="form-label">Location</label>
+                                <select asp-for="LocationID" class="form-select" asp-items="@(new SelectList(ViewBag.Locations, "LocationID", "LocationName", Model.LocationID))">
+                                    <option value="">Select Location</option>
+                                </select>
+                                <span asp-validation-for="LocationID" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="ContactNo" class="form-label">Contact Number</label>
+                                <input asp-for="ContactNo" class="form-control" />
+                                <span asp-validation-for="ContactNo" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="AvailableTime" class="form-label">Available Time</label>
+                                <input asp-for="AvailableTime" class="form-control" />
+                                <span asp-validation-for="AvailableTime" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Fees" class="form-label">Consultation Fees *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input asp-for="Fees" class="form-control" />
+                                </div>
+                                <span asp-validation-for="Fees" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a href="@Url.Action("ManageDoctors", "Admin")" class="btn btn-secondary">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Save Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,84 @@
+@model List<HealthCareApp.Models.Payment>
+@{
+    ViewData["Title"] = "Pay Consultation Fees";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="h3 mb-4 text-gray-800">💳 Pay Consultation Fees</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Your Payments</h6>
+                    <div>
+                        <span class="badge bg-success me-2">Total Paid: $@ViewBag.TotalPaid</span>
+                        <span class="badge bg-danger">Total Due: $@ViewBag.TotalDue</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (Model != null && Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var payment in Model)
+                                    {
+                                        <tr>
+                                            <td>@payment.PaymentDate.ToString("yyyy-MM-dd")</td>
+                                            <td>$@payment.Amount</td>
+                                            <td>
+                                                @if (payment.PaymentStatus == "Completed")
+                                                {
+                                                    <span class="badge bg-success">Completed</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">Pending</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (payment.PaymentStatus != "Completed")
+                                                {
+                                                    <form asp-action="PayFees" method="post" class="d-flex align-items-center gap-2">
+                                                        <input type="hidden" name="paymentId" value="@payment.PaymentID" />
+                                                        <label for="amount_@payment.PaymentID" class="form-label mb-0">Amount</label>
+                                                        <input id="amount_@payment.PaymentID" type="number" step="0.01" min="0" name="amount" class="form-control form-control-sm" style="max-width:160px" value="@payment.Amount" required />
+                                                        <button type="submit" class="btn btn-primary btn-sm">Pay</button>
+                                                    </form>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-success">✔</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-credit-card fa-3x mb-3"></i>
+                            <p>No payments found.</p>
+                            <small>Your pending consultation fees will appear here if you have unpaid appointments.</small>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
