@@ -1,4 +1,4 @@
-﻿@{
+﻿<!-- @{
     ViewData["Title"] = "Home Page";
 }
 
@@ -20,4 +20,22 @@
     }
     
     <p class="mt-4">Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div> -->
+@{
+    ViewData["Title"] = "Welcome";
+}
+<div class="container py-5">
+    <div class="row align-items-center">
+        <div class="col-md-6 text-center text-md-start">
+            <h1 class="display-4 fw-bold mb-3">Welcome to <span class="text-primary">MediCare</span></h1>
+            <p class="lead mb-4">Your trusted online healthcare appointment system. Book, manage, and track your appointments with ease and security.</p>
+            <div class="d-flex gap-3 justify-content-center justify-content-md-start">
+                <a class="btn btn-primary btn-lg px-4" asp-controller="Account" asp-action="Login">Login</a>
+                <a class="btn btn-outline-primary btn-lg px-4" asp-controller="Account" asp-action="Register">Register</a>
+            </div>
+        </div>
+        <div class="col-md-6 text-center mt-4 mt-md-0">
+            <img src="https://img.freepik.com/free-vector/doctor-character-background_1270-84.jpg?w=826&t=st=1714040000~exp=1714040600~hmac=demo" alt="Healthcare" class="img-fluid rounded shadow" style="max-height: 350px;">
+        </div>
+    </div>
 </div>

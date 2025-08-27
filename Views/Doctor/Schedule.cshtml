@@ -59,10 +59,7 @@
                                                     </div>
                                                     <button type="submit" class="btn btn-sm btn-warning">Reschedule</button>
                                                 </form>
-                                                <form asp-action="CancelAppointment" method="post" class="d-inline">
-                                                    <input type="hidden" name="appointmentId" value="@a.AppointmentID" />
-                                                    <button type="submit" class="btn btn-sm btn-danger mt-2">Cancel</button>
-                                                </form>
+                                               
                                             </td>
                                             <td>
                                                 <form asp-action="UpdateConsultationNotes" method="post">
