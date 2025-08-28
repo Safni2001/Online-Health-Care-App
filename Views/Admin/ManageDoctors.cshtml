@@ -67,7 +67,7 @@
                                     <td>@doctor.Location?.LocationName</td>
                                     <td>@doctor.ContactNo</td>
                                     <td>@doctor.AvailableTime</td>
-                                    <td>$@doctor.Fees.ToString("F2")</td>
+                                    <td>Rs.@doctor.Fees.ToString("F2")</td>
                                     <td>
                                         @if (doctor.User?.IsActive == true)
                                         {
@@ -79,7 +79,7 @@
                                         }
                                     </td>
                                     <td>
-                                        <div class="btn-group" role="group">
+                                        <div style="gap: 5px;" class="btn-group" role="group">
                                             @if (doctor.User?.IsActive == true)
                                             {
                                                 <form asp-action="DeactivateDoctor" method="post" style="display: inline;">
