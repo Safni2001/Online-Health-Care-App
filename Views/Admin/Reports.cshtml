@@ -1,0 +1,398 @@
+@model HealthCareApp.Models.ReportsIndexViewModel
+
+@{
+    ViewData["Title"] = "Reports & Analytics";
+}
+
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 mb-2 text-gray-800">
+                        <i class="fas fa-chart-bar text-primary"></i> Reports & Analytics
+                    </h1>
+                    <p class="text-muted mb-0">Generate and download date-wise reports for appointments, payments, and
+                        patients</p>
+                </div>
+                <div class="text-end">
+                    <small class="text-muted">Today: @DateTime.Now.ToString("dddd, MMMM dd, yyyy")</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Generation Form -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-4 border-bottom">
+                    <h5 class="m-0 font-weight-bold text-dark">
+                        <i class="fas fa-filter text-primary"></i> Generate Report
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" asp-action="GenerateReport">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Request.ReportType" class="form-label font-weight-bold">Report
+                                        Type</label>
+                                    <select asp-for="Request.ReportType" class="form-select">
+                                        <option value="Appointments">Appointments Report</option>
+                                        <option value="Payments">Payments Report</option>
+                                        <option value="Patients">Patients Report</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Request.FromDate" class="form-label font-weight-bold">From
+                                        Date</label>
+                                    <input asp-for="Request.FromDate" type="date" class="form-control" />
+                                    <span asp-validation-for="Request.FromDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Request.ToDate" class="form-label font-weight-bold">To Date</label>
+                                    <input asp-for="Request.ToDate" type="date" class="form-control" />
+                                    <span asp-validation-for="Request.ToDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group mb-3">
+                                    <label class="form-label font-weight-bold">&nbsp;</label>
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-search"></i> Generate Report
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointment Report -->
+    @if (Model.AppointmentReport != null)
+    {
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-4 border-bottom d-flex justify-content-between align-items-center">
+                        <h5 class="m-0 font-weight-bold text-dark">
+                            <i class="fas fa-calendar-alt text-info"></i> Appointment Report
+                        </h5>
+                        <form method="post" asp-action="DownloadReportPdf" style="display: inline;">
+                            <input type="hidden" name="ReportType" value="Appointments" />
+                            <input type="hidden" name="FromDate"
+                                value="@Model.AppointmentReport.FromDate.ToString("yyyy-MM-dd")" />
+                            <input type="hidden" name="ToDate"
+                                value="@Model.AppointmentReport.ToDate.ToString("yyyy-MM-dd")" />
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-download"></i> Download HTML Report
+                            </button>
+                        </form>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row text-center mb-4">
+                            <div class="col-md-3">
+                                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                                    style="width: 60px; height: 60px;">
+                                    <i class="fas fa-calendar-check fa-lg text-primary"></i>
+                                </div>
+                                <div class="h4 font-weight-bold text-primary">@Model.AppointmentReport.TotalAppointments
+                                </div>
+                                <small class="text-muted">Total Appointments</small>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                                    style="width: 60px; height: 60px;">
+                                    <i class="fas fa-check-circle fa-lg text-success"></i>
+                                </div>
+                                <div class="h4 font-weight-bold text-success">@Model.AppointmentReport.CompletedAppointments
+                                </div>
+                                <small class="text-muted">Completed</small>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                                    style="width: 60px; height: 60px;">
+                                    <i class="fas fa-clock fa-lg text-warning"></i>
+                                </div>
+                                <div class="h4 font-weight-bold text-warning">@Model.AppointmentReport.PendingAppointments
+                                </div>
+                                <small class="text-muted">Pending</small>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                                    style="width: 60px; height: 60px;">
+                                    <i class="fas fa-times-circle fa-lg text-danger"></i>
+                                </div>
+                                <div class="h4 font-weight-bold text-danger">@Model.AppointmentReport.CancelledAppointments
+                                </div>
+                                <small class="text-muted">Cancelled</small>
+                            </div>
+                        </div>
+
+                        @if (Model.AppointmentReport.AppointmentDetails.Any())
+                        {
+                            <h6 class="font-weight-bold mb-3">Recent Appointments</h6>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Patient</th>
+                                            <th>Doctor</th>
+                                            <th>Specialty</th>
+                                            <th>Date</th>
+                                            <th>Time</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var appointment in Model.AppointmentReport.AppointmentDetails.Take(10))
+                                        {
+                                            var statusBadge = appointment.IsCancelled ? "danger" :
+                                            appointment.Status == "Completed" ? "success" : "warning";
+                                            var status = appointment.IsCancelled ? "Cancelled" : appointment.Status;
+                                            <tr>
+                                                <td>@appointment.AppointmentID</td>
+                                                <td>@appointment.PatientName</td>
+                                                <td>@appointment.DoctorName</td>
+                                                <td>@appointment.SpecialtyName</td>
+                                                <td>@appointment.AppointmentDate.ToString("MMM dd, yyyy")</td>
+                                                <td>@appointment.AppointmentTime</td>
+                                                <td><span class="badge bg-@statusBadge">@status</span></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Payment Report -->
+    @if (Model.PaymentReport != null)
+    {
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-4 border-bottom d-flex justify-content-between align-items-center">
+                        <h5 class="m-0 font-weight-bold text-dark">
+                            <i class="fas fa-dollar-sign text-success"></i> Payment Report
+                        </h5>
+                        <form method="post" asp-action="DownloadReportPdf" style="display: inline;">
+                            <input type="hidden" name="ReportType" value="Payments" />
+                            <input type="hidden" name="FromDate"
+                                value="@Model.PaymentReport.FromDate.ToString("yyyy-MM-dd")" />
+                            <input type="hidden" name="ToDate" value="@Model.PaymentReport.ToDate.ToString("yyyy-MM-dd")" />
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-download"></i> Download HTML Report
+                            </button>
+                        </form>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row text-center mb-4">
+                            <div class="col-md-3">
+                                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                                    style="width: 60px; height: 60px;">
+                                    <i class="fas fa-credit-card fa-lg text-primary"></i>
+                                </div>
+                                <div class="h4 font-weight-bold text-primary">@Model.PaymentReport.TotalTransactions</div>
+                                <small class="text-muted">Total Transactions</small>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                                    style="width: 60px; height: 60px;">
+                                    <i class="fas fa-money-bill fa-lg text-success"></i>
+                                </div>
+                                <div class="h4 font-weight-bold text-success">
+                                    Rs.@Model.PaymentReport.TotalRevenue.ToString("N2")</div>
+                                <small class="text-muted">Total Revenue</small>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                                    style="width: 60px; height: 60px;">
+                                    <i class="fas fa-check fa-lg text-info"></i>
+                                </div>
+                                <div class="h4 font-weight-bold text-info">
+                                    Rs.@Model.PaymentReport.CompletedRevenue.ToString("N2")</div>
+                                <small class="text-muted">Completed Revenue</small>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                                    style="width: 60px; height: 60px;">
+                                    <i class="fas fa-hourglass-half fa-lg text-warning"></i>
+                                </div>
+                                <div class="h4 font-weight-bold text-warning">
+                                    Rs.@Model.PaymentReport.PendingRevenue.ToString("N2")</div>
+                                <small class="text-muted">Pending Revenue</small>
+                            </div>
+                        </div>
+
+                        @if (Model.PaymentReport.PaymentDetails.Any())
+                        {
+                            <h6 class="font-weight-bold mb-3">Recent Payments</h6>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Payment ID</th>
+                                            <th>Patient</th>
+                                            <th>Booking Ref</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var payment in Model.PaymentReport.PaymentDetails.Take(10))
+                                        {
+                                            var statusBadge = payment.PaymentStatus == "Completed" ? "success" : "warning";
+                                            <tr>
+                                                <td>@payment.PaymentID</td>
+                                                <td>@payment.PatientName</td>
+                                                <td>@payment.BookingRef</td>
+                                                <td class="text-success font-weight-bold">Rs.@payment.Amount.ToString("N2")</td>
+                                                <td><span class="badge bg-@statusBadge">@payment.PaymentStatus</span></td>
+                                                <td>@payment.PaymentDate.ToString("MMM dd, yyyy")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Patient Report -->
+    @if (Model.PatientReport != null)
+    {
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-4 border-bottom d-flex justify-content-between align-items-center">
+                        <h5 class="m-0 font-weight-bold text-dark">
+                            <i class="fas fa-users text-info"></i> Patient Report
+                        </h5>
+                        <form method="post" asp-action="DownloadReportPdf" style="display: inline;">
+                            <input type="hidden" name="ReportType" value="Patients" />
+                            <input type="hidden" name="FromDate"
+                                value="@Model.PatientReport.FromDate.ToString("yyyy-MM-dd")" />
+                            <input type="hidden" name="ToDate" value="@Model.PatientReport.ToDate.ToString("yyyy-MM-dd")" />
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-download"></i> Download HTML Report
+                            </button>
+                        </form>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row text-center mb-4">
+                            <div class="col-md-3">
+                                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                                    style="width: 60px; height: 60px;">
+                                    <i class="fas fa-user-plus fa-lg text-primary"></i>
+                                </div>
+                                <div class="h4 font-weight-bold text-primary">@Model.PatientReport.NewPatients</div>
+                                <small class="text-muted">New Patients</small>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                                    style="width: 60px; height: 60px;">
+                                    <i class="fas fa-users fa-lg text-info"></i>
+                                </div>
+                                <div class="h4 font-weight-bold text-info">@Model.PatientReport.TotalPatients</div>
+                                <small class="text-muted">Total Patients</small>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                                    style="width: 60px; height: 60px;">
+                                    <i class="fas fa-user-check fa-lg text-success"></i>
+                                </div>
+                                <div class="h4 font-weight-bold text-success">@Model.PatientReport.ActivePatients</div>
+                                <small class="text-muted">Active Patients</small>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="bg-secondary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                                    style="width: 60px; height: 60px;">
+                                    <i class="fas fa-user-times fa-lg text-secondary"></i>
+                                </div>
+                                <div class="h4 font-weight-bold text-secondary">@Model.PatientReport.InactivePatients</div>
+                                <small class="text-muted">Inactive Patients</small>
+                            </div>
+                        </div>
+
+                        @if (Model.PatientReport.PatientDetails.Any())
+                        {
+                            <h6 class="font-weight-bold mb-3">Patient Details</h6>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Patient ID</th>
+                                            <th>Name</th>
+                                            <th>Username</th>
+                                            <th>Registration Date</th>
+                                            <th>Status</th>
+                                            <th>Total Appointments</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var patient in Model.PatientReport.PatientDetails.Take(10))
+                                        {
+                                            var statusBadge = patient.IsActive ? "success" : "secondary";
+                                            var status = patient.IsActive ? "Active" : "Inactive";
+                                            <tr>
+                                                <td>@patient.PatientID</td>
+                                                <td>@patient.PatientName</td>
+                                                <td>@patient.Username</td>
+                                                <td>@patient.RegisteredDate.ToString("MMM dd, yyyy")</td>
+                                                <td><span class="badge bg-@statusBadge">@status</span></td>
+                                                <td>@patient.TotalAppointments</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (Model.AppointmentReport == null && Model.PaymentReport == null && Model.PatientReport == null)
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                            style="width: 80px; height: 80px;">
+                            <i class="fas fa-chart-bar fa-2x text-muted"></i>
+                        </div>
+                        <h5 class="text-muted">No Report Generated</h5>
+                        <p class="text-muted mb-0">Select a report type, date range, and click "Generate Report" to view
+                            statistics and download reports.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

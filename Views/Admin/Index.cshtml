@@ -3,169 +3,40 @@
 }
 
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <h1 class="h3 mb-4 text-gray-800">🏥 Admin Dashboard</h1>
-        </div>
-    </div>
-
-    <!-- Statistics Cards -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Total Users
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalUsers</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-users fa-2x text-gray-300">👥</i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Total Doctors
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalDoctors</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-user-md fa-2x text-gray-300">👨‍⚕️</i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                Total Patients
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalPatients</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-user fa-2x text-gray-300">👤</i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Total Appointments
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalAppointments</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-calendar fa-2x text-gray-300">📅</i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Quick Actions -->
+    <!-- Header Section -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card shadow">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 mb-2 text-gray-800">
+                        <i class="fas fa-shield-alt text-primary"></i> Admin Dashboard
+                    </h1>
+                    <p class="text-muted mb-0">Welcome back, Administrator! Monitor and manage your healthcare system.</p>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-2 mb-2">
-                            <a href="@Url.Action("ManageDoctors", "Admin")" class="btn btn-primary btn-block">
-                                <i class="fas fa-user-md"></i> Manage Doctors
-                            </a>
-                        </div>
-                        <div class="col-md-2 mb-2">
-                            <a href="@Url.Action("ManagePatients", "Admin")" class="btn btn-success btn-block">
-                                <i class="fas fa-users"></i> Manage Patients
-                            </a>
-                        </div>
-                        <div class="col-md-2 mb-2">
-                            <a href="@Url.Action("Reports", "Admin")" class="btn btn-info btn-block">
-                                <i class="fas fa-chart-bar"></i> View Reports
-                            </a>
-                        </div>
-                        <div class="col-md-2 mb-2">
-                            <a href="@Url.Action("AddDoctor", "Admin")" class="btn btn-warning btn-block">
-                                <i class="fas fa-plus"></i> Add Doctor
-                            </a>
-                        </div>
-                        <!-- <div class="col-md-2 mb-2">
-                            <a href="@Url.Action("ManageSpecialties", "Admin")" class="btn btn-outline-primary me-2">
-                                <i class="fas fa-stethoscope"></i> Manage Specialties
-                            </a>
-                        </div> -->
-                    </div>
+                <div class="text-end">
+                    <small class="text-muted">Today: @DateTime.Now.ToString("dddd, MMMM dd, yyyy")</small>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Recent Activity -->
-    <!-- <div class="row">
-        <div class="col-lg-6">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Recent Users</h6>
-                </div>
-                <div class="card-body">
-                    <div class="text-center text-muted">
-                        <p>No recent user activity</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-6">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">System Status</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="text-success">
-                                <i class="fas fa-check-circle"></i> Database: Online
-                            </div>
+    <!-- Welcome Card -->
+    <!-- <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg">
+                <div class="card-body bg-gradient-primary text-white p-4 rounded">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h4 class="card-title mb-2">
+                                <i class="fas fa-cogs"></i> System Management Center
+                            </h4>
+                            <p class="card-text mb-0">
+                                Oversee operations, generate reports, manage users, and maintain system integrity across your healthcare platform.
+                            </p>
                         </div>
-                        <div class="col-6">
-                            <div class="text-success">
-                                <i class="fas fa-check-circle"></i> Authentication: Active
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mt-2">
-                        <div class="col-6">
-                            <div class="text-success">
-                                <i class="fas fa-check-circle"></i> Sessions: Working
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="text-success">
-                                <i class="fas fa-check-circle"></i> Security: Enabled
+                        <div class="col-md-4 text-center">
+                            <div class="bg-white bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="fas fa-hospital fa-2x text-white"></i>
                             </div>
                         </div>
                     </div>
@@ -173,4 +44,243 @@
             </div>
         </div>
     </div> -->
+
+    <!-- Statistics Cards -->
+    <div class="row mb-5">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-2">
+                                Total Users
+                            </div>
+                            <div class="h4 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalUsers</div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <i class="fas fa-users fa-lg text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-2">
+                                Total Doctors
+                            </div>
+                            <div class="h4 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalDoctors</div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <i class="fas fa-user-md fa-lg text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-2">
+                                Total Patients
+                            </div>
+                            <div class="h4 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalPatients</div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <i class="fas fa-user-injured fa-lg text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-2">
+                                Total Appointments
+                            </div>
+                            <div class="h4 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalAppointments</div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <i class="fas fa-calendar-alt fa-lg text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-4 border-bottom">
+                    <h5 class="m-0 font-weight-bold text-dark">
+                        <i class="fas fa-bolt text-warning"></i> Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-lg-3 col-md-6">
+                            <a href="@Url.Action("Reports", "Admin")" class="btn btn-primary btn-lg w-100 h-100 d-flex flex-column align-items-center justify-content-center text-decoration-none" style="min-height: 120px;">
+                                <i class="fas fa-chart-bar fa-2x mb-3"></i>
+                                <span class="fw-bold">View Reports</span>
+                                <small class="text-white-50 mt-1">Analytics & insights</small>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <a href="@Url.Action("ManageDoctors", "Admin")" class="btn btn-success btn-lg w-100 h-100 d-flex flex-column align-items-center justify-content-center text-decoration-none" style="min-height: 120px;">
+                                <i class="fas fa-user-md fa-2x mb-3"></i>
+                                <span class="fw-bold">Manage Doctors</span>
+                                <small class="text-white-50 mt-1">Doctor administration</small>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <a href="@Url.Action("ManagePatients", "Admin")" class="btn btn-info btn-lg w-100 h-100 d-flex flex-column align-items-center justify-content-center text-decoration-none" style="min-height: 120px;">
+                                <i class="fas fa-users fa-2x mb-3"></i>
+                                <span class="fw-bold">Manage Patients</span>
+                                <small class="text-white-50 mt-1">Patient administration</small>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <a href="@Url.Action("AddDoctor", "Admin")" class="btn btn-warning btn-lg w-100 h-100 d-flex flex-column align-items-center justify-content-center text-decoration-none" style="min-height: 120px;">
+                                <i class="fas fa-plus fa-2x mb-3"></i>
+                                <span class="fw-bold">Add Doctor</span>
+                                <small class="text-white-50 mt-1">Register new doctor</small>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Overview Section -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-4 border-bottom">
+                    <h5 class="m-0 font-weight-bold text-dark">
+                        <i class="fas fa-tachometer-alt text-primary"></i> System Overview
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-primary border-0 shadow-sm mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                <i class="fas fa-info-circle text-primary"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="alert-heading mb-1">Healthcare Management System is running smoothly</h6>
+                                <p class="mb-0">All core services are operational and user activity is normal.</p>
+                            </div>
+                            <a href="@Url.Action("Reports", "Admin")" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                    <i class="fas fa-database text-success"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 text-success">Database Status</h6>
+                                    <small class="text-muted">Connected and optimized</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                    <i class="fas fa-shield-alt text-success"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 text-success">Security Status</h6>
+                                    <small class="text-muted">All systems secure</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                    <i class="fas fa-server text-success"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 text-success">Server Status</h6>
+                                    <small class="text-muted">Running optimally</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                    <i class="fas fa-users text-success"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 text-success">User Sessions</h6>
+                                    <small class="text-muted">Active and secure</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-4 border-bottom">
+                    <h5 class="m-0 font-weight-bold text-dark">
+                        <i class="fas fa-tools text-info"></i> Admin Tools
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-grid gap-3">
+                        <a href="@Url.Action("ManageSpecialties", "Admin")" class="btn btn-outline-primary d-flex align-items-center">
+                            <i class="fas fa-stethoscope me-2"></i>
+                            <div class="text-start">
+                                <div class="fw-bold">Manage Specialties</div>
+                                <small class="text-muted">Add or edit medical specialties</small>
+                            </div>
+                        </a>
+                        
+                        <a href="#" class="btn btn-outline-secondary d-flex align-items-center" onclick="alert('System backup functionality coming soon!')">
+                            <i class="fas fa-database me-2"></i>
+                            <div class="text-start">
+                                <div class="fw-bold">System Backup</div>
+                                <small class="text-muted">Create system backup</small>
+                            </div>
+                        </a>
+                        
+                        <a href="#" class="btn btn-outline-info d-flex align-items-center" onclick="alert('User logs functionality coming soon!')">
+                            <i class="fas fa-history me-2"></i>
+                            <div class="text-start">
+                                <div class="fw-bold">Activity Logs</div>
+                                <small class="text-muted">View system activity logs</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

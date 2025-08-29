@@ -406,10 +406,81 @@ namespace HealthCareApp.Controllers
             public string? Description { get; set; }
         }
 
+        [HttpGet]
         public IActionResult Reports()
         {
             ViewData["Title"] = "Reports & Analytics";
-            return View();
+            var model = new ReportsIndexViewModel();
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GenerateReport(DateRangeReportRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("Reports", new ReportsIndexViewModel { Request = request });
+            }
+
+            var model = new ReportsIndexViewModel { Request = request };
+
+            switch (request.ReportType)
+            {
+                case "Appointments":
+                    model.AppointmentReport = await _adminService.GetAppointmentReportAsync(request.FromDate, request.ToDate);
+                    break;
+                case "Payments":
+                    model.PaymentReport = await _adminService.GetPaymentReportAsync(request.FromDate, request.ToDate);
+                    break;
+                case "Patients":
+                    model.PatientReport = await _adminService.GetPatientReportAsync(request.FromDate, request.ToDate);
+                    break;
+            }
+
+            return View("Reports", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DownloadReportPdf(DateRangeReportRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Invalid date range");
+            }
+
+            // Get the PDF service from DI
+            var pdfService = HttpContext.RequestServices.GetService<IPdfService>();
+            if (pdfService == null)
+            {
+                return BadRequest("PDF service not available");
+            }
+
+            string htmlContent = "";
+            string fileName = "";
+
+            switch (request.ReportType)
+            {
+                case "Appointments":
+                    var appointmentReport = await _adminService.GetAppointmentReportAsync(request.FromDate, request.ToDate);
+                    htmlContent = pdfService.GenerateAppointmentReportHtml(appointmentReport);
+                    fileName = $"Appointment_Report_{request.FromDate:yyyyMMdd}_to_{request.ToDate:yyyyMMdd}.html";
+                    break;
+                case "Payments":
+                    var paymentReport = await _adminService.GetPaymentReportAsync(request.FromDate, request.ToDate);
+                    htmlContent = pdfService.GeneratePaymentReportHtml(paymentReport);
+                    fileName = $"Payment_Report_{request.FromDate:yyyyMMdd}_to_{request.ToDate:yyyyMMdd}.html";
+                    break;
+                case "Patients":
+                    var patientReport = await _adminService.GetPatientReportAsync(request.FromDate, request.ToDate);
+                    htmlContent = pdfService.GeneratePatientReportHtml(patientReport);
+                    fileName = $"Patient_Report_{request.FromDate:yyyyMMdd}_to_{request.ToDate:yyyyMMdd}.html";
+                    break;
+                default:
+                    return BadRequest("Invalid report type");
+            }
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(htmlContent);
+            return File(bytes, "text/html", fileName);
         }
     }
 
