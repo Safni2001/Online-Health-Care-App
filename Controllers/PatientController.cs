@@ -24,37 +24,49 @@ namespace HealthCareApp.Controllers
 
         private async Task<string> GenerateBookingIdAsync()
         {
-            // Get the last booking reference from the database
-            var lastPayment = await _context.Payments
+            // Get all booking references and extract only main booking numbers (exclude partial payments)
+            var allPayments = await _context.Payments
                 .Where(p => !string.IsNullOrEmpty(p.BookingRef) && p.BookingRef.StartsWith("BK"))
-                .OrderByDescending(p => p.PaymentID)
-                .FirstOrDefaultAsync();
+                .Select(p => p.BookingRef)
+                .ToListAsync();
 
-            int nextNumber = 1;
-            if (lastPayment != null && !string.IsNullOrEmpty(lastPayment.BookingRef))
+            int maxNumber = 0;
+            
+            foreach (var bookingRef in allPayments)
             {
-                // Extract number from BookingRef (e.g., "BK001" -> 1)
-                var numberPart = lastPayment.BookingRef.Substring(2);
-                if (int.TryParse(numberPart, out int currentNumber))
+                if (!string.IsNullOrEmpty(bookingRef))
                 {
-                    nextNumber = currentNumber + 1;
+                    // Extract the main booking number (ignore partial payment suffixes like _P1, _P2)
+                    var numberPart = bookingRef.Substring(2); // Remove "BK" prefix
+                    
+                    // Handle partial payment references like "001_P1" -> "001"
+                    if (numberPart.Contains("_"))
+                    {
+                        numberPart = numberPart.Split('_')[0];
+                    }
+                    
+                    if (int.TryParse(numberPart, out int currentNumber))
+                    {
+                        maxNumber = Math.Max(maxNumber, currentNumber);
+                    }
                 }
             }
 
-            // Format as BK001, BK002, etc.
+            // Generate next unique booking ID
+            int nextNumber = maxNumber + 1;
             return $"BK{nextNumber:D3}";
         }
 
         private string MaskCardNumber(string cardNumber)
         {
             if (string.IsNullOrEmpty(cardNumber)) return cardNumber;
-            
+
             // Remove any existing formatting
             var cleanNumber = cardNumber.Replace("-", "").Replace(" ", "");
-            
+
             if (cleanNumber.Length < 4)
                 return "****";
-                
+
             // Show only last 4 digits
             var lastFour = cleanNumber.Substring(cleanNumber.Length - 4);
             return $"****-****-****-{lastFour}";
@@ -63,7 +75,7 @@ namespace HealthCareApp.Controllers
         public async Task<IActionResult> Index()
         {
             ViewData["Title"] = "Patient Dashboard";
-            
+
             // Get patient ID from session
             var userId = HttpContext.Session.GetString("UserID");
             if (int.TryParse(userId, out int patientId))
@@ -74,14 +86,14 @@ namespace HealthCareApp.Controllers
                 ViewBag.MedicalRecords = 0; // Placeholder for now
                 ViewBag.PendingPayments = 0; // Placeholder for now
             }
-            
+
             return View();
         }
 
         public async Task<IActionResult> FindDoctors(string? specialty, string? location, string? search)
         {
             ViewData["Title"] = "Find Doctors";
-            
+
             var doctors = await _appointmentService.SearchDoctorsAsync(specialty, location, search);
             return View(doctors);
         }
@@ -149,9 +161,9 @@ namespace HealthCareApp.Controllers
                         {
                             // Generate single booking ID for this appointment
                             var bookingId = await GenerateBookingIdAsync();
-                            
+
                             decimal amountPaidNow = model.PayNowAmount;
-                            
+
                             // Create ONE main payment record for the total doctor fee
                             var mainPayment = new Payment
                             {
@@ -166,7 +178,7 @@ namespace HealthCareApp.Controllers
                                 CVN = amountPaidNow > 0 && !string.IsNullOrEmpty(model.CVN) ? "***" : null
                             };
                             await _context.Payments.AddAsync(mainPayment);
-                            
+
                             // If partial payment was made, create a separate payment record to track the payment history
                             if (amountPaidNow > 0 && amountPaidNow < doctorFee)
                             {
@@ -268,7 +280,7 @@ namespace HealthCareApp.Controllers
                 _logger.LogError(ex, "Error cancelling appointment");
                 TempData["ErrorMessage"] = "An error occurred while cancelling the appointment.";
             }
-            
+
             return RedirectToAction("MyAppointments");
         }
 
@@ -317,8 +329,15 @@ namespace HealthCareApp.Controllers
 
             // Group by main booking reference (without _P suffix)
             var paymentGroups = allPayments
-                .GroupBy(p => p.BookingRef.Contains("_P") ? p.BookingRef.Substring(0, p.BookingRef.IndexOf("_P")) : p.BookingRef)
+                .GroupBy(p =>
+                {
+                    var bookingRef = p.BookingRef ?? string.Empty; // ✅ fallback if null
+                    return bookingRef.Contains("_P")
+                        ? bookingRef.Substring(0, bookingRef.IndexOf("_P"))
+                        : bookingRef;
+                })
                 .ToList();
+
 
             var paymentsWithDoctorsCalculated = new List<dynamic>();
 
@@ -326,7 +345,7 @@ namespace HealthCareApp.Controllers
             {
                 var mainBookingRef = group.Key;
                 var paymentsInGroup = group.ToList();
-                
+
                 // Find the main payment (the one without _P suffix)
                 var mainPayment = paymentsInGroup.FirstOrDefault(p => p.BookingRef == mainBookingRef);
                 if (mainPayment == null) continue;
@@ -370,7 +389,7 @@ namespace HealthCareApp.Controllers
 
             ViewBag.TotalDue = totalDue;
             ViewBag.TotalPaid = totalPaid;
-            
+
             return View();
         }
 
@@ -390,25 +409,32 @@ namespace HealthCareApp.Controllers
             if (mainPayment != null && mainPayment.PaymentStatus == "Pending")
             {
                 // Get all payments for this booking to calculate total paid
-                var bookingRef = mainPayment.BookingRef;
+                var bookingRef = mainPayment?.BookingRef;
+
                 var allPaymentsForBooking = await _context.Payments
-                    .Where(p => p.PatientID == patient.PatientID && 
-                               (p.BookingRef == bookingRef || p.BookingRef.StartsWith(bookingRef + "_P")))
+                    .Where(p => p.PatientID == patient.PatientID &&
+                           (
+                               p.BookingRef == bookingRef ||
+                               (bookingRef != null && p.BookingRef != null && p.BookingRef.StartsWith(bookingRef + "_P"))
+                           ))
                     .ToListAsync();
+
 
                 // Calculate total already paid (excluding the main pending payment)
                 var totalPaidSoFar = allPaymentsForBooking
                     .Where(p => p.PaymentStatus == "Completed")
                     .Sum(p => p.Amount);
 
-                var totalFeeAmount = mainPayment.Amount; // This is the full doctor fee
+                var totalFeeAmount = mainPayment?.Amount ?? 0;
+                // This is the full doctor fee
                 var remainingDue = totalFeeAmount - totalPaidSoFar;
-                
+
                 if (model.Amount >= remainingDue)
                 {
                     // Full payment of remaining amount
                     // Create a payment record for this transaction
-                    var partialCount = allPaymentsForBooking.Count(p => p.BookingRef.Contains("_P"));
+                    var partialCount = allPaymentsForBooking.Count(p => p.BookingRef != null && p.BookingRef.Contains("_P"));
+
                     var newPartialPayment = new Payment
                     {
                         BookingRef = bookingRef + "_P" + (partialCount + 1),
@@ -424,16 +450,17 @@ namespace HealthCareApp.Controllers
                     await _context.Payments.AddAsync(newPartialPayment);
 
                     // Update main payment status to completed
-                    mainPayment.PaymentStatus = "Completed";
+                    mainPayment!.PaymentStatus = "Completed";
                     mainPayment.PaymentDate = DateTime.Now;
-                    
+
                     await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Payment completed successfully! Full amount paid.";
                 }
                 else if (model.Amount > 0)
                 {
                     // Partial payment
-                    var partialCount = allPaymentsForBooking.Count(p => p.BookingRef.Contains("_P"));
+                    var partialCount = allPaymentsForBooking.Count(p => p.BookingRef != null && p.BookingRef.Contains("_P"));
+
                     var newPartialPayment = new Payment
                     {
                         BookingRef = bookingRef + "_P" + (partialCount + 1),
@@ -447,10 +474,10 @@ namespace HealthCareApp.Controllers
                         CVN = !string.IsNullOrEmpty(model.CVN) ? "***" : null
                     };
                     await _context.Payments.AddAsync(newPartialPayment);
-                    
+
                     var newRemainingDue = remainingDue - model.Amount;
                     await _context.SaveChangesAsync();
-                    
+
                     TempData["SuccessMessage"] = $"Partial payment of Rs.{model.Amount} completed. Remaining Rs.{newRemainingDue} is still due.";
                 }
                 else
@@ -489,16 +516,17 @@ namespace HealthCareApp.Controllers
             var doctor = await _context.Doctors
                 .Include(d => d.Location)
                 .FirstOrDefaultAsync(d => d.DoctorID == doctorId);
-            
+
             var locations = new List<object>();
             if (doctor?.Location != null)
             {
-                locations.Add(new { 
-                    LocationID = doctor.Location.LocationID, 
-                    LocationName = doctor.Location.LocationName 
+                locations.Add(new
+                {
+                    LocationID = doctor.Location.LocationID,
+                    LocationName = doctor.Location.LocationName
                 });
             }
-            
+
             return Json(locations);
         }
 
@@ -581,7 +609,7 @@ namespace HealthCareApp.Controllers
                         {
                             idPart = idPart.Split('_')[0];
                         }
-                        
+
                         if (int.TryParse(idPart, out int appointmentId))
                         {
                             var appointment = appointments.FirstOrDefault(a => a.AppointmentID == appointmentId);
@@ -653,7 +681,7 @@ namespace HealthCareApp.Controllers
     {
         public int PaymentID { get; set; }
         public decimal Amount { get; set; }
-        
+
         // Banking fields
         [Display(Name = "Bank Name")]
         [StringLength(100)]

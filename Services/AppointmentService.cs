@@ -165,12 +165,14 @@ namespace HealthCareApp.Services
 
             if (!string.IsNullOrEmpty(specialty))
             {
-                query = query.Where(d => d.Specialty.SpecialtyName.Contains(specialty));
+                query = query.Where(d => d.Specialty != null &&
+                                         d.Specialty.SpecialtyName.Contains(specialty));
             }
 
             if (!string.IsNullOrEmpty(location))
             {
-                query = query.Where(d => d.Location.LocationName.Contains(location));
+                query = query.Where(d => d.Location != null &&
+                                         d.Location.LocationName.Contains(location));
             }
 
             if (!string.IsNullOrEmpty(searchTerm))
@@ -184,8 +186,8 @@ namespace HealthCareApp.Services
         public async Task<List<Doctor>> GetAvailableDoctorsAsync(DateTime date, TimeSpan time)
         {
             var busyDoctors = await _context.Appointments
-                .Where(a => a.AppointmentDate.Date == date.Date && 
-                           a.AppointmentTime == time && 
+                .Where(a => a.AppointmentDate.Date == date.Date &&
+                           a.AppointmentTime == time &&
                            !a.IsCancelled)
                 .Select(a => a.DoctorID)
                 .ToListAsync();
@@ -202,9 +204,9 @@ namespace HealthCareApp.Services
         public async Task<bool> IsDoctorAvailableAsync(int doctorId, DateTime date, TimeSpan time)
         {
             var existingAppointment = await _context.Appointments
-                .FirstOrDefaultAsync(a => a.DoctorID == doctorId && 
-                                        a.AppointmentDate.Date == date.Date && 
-                                        a.AppointmentTime == time && 
+                .FirstOrDefaultAsync(a => a.DoctorID == doctorId &&
+                                        a.AppointmentDate.Date == date.Date &&
+                                        a.AppointmentTime == time &&
                                         !a.IsCancelled);
 
             return existingAppointment == null;
@@ -217,8 +219,8 @@ namespace HealthCareApp.Services
         public async Task<int> GetUpcomingAppointmentsCountAsync(int patientId)
         {
             return await _context.Appointments
-                .CountAsync(a => a.PatientID == patientId && 
-                               a.AppointmentDate >= DateTime.Today && 
+                .CountAsync(a => a.PatientID == patientId &&
+                               a.AppointmentDate >= DateTime.Today &&
                                !a.IsCancelled);
         }
 
@@ -234,8 +236,8 @@ namespace HealthCareApp.Services
                 .Include(a => a.Doctor)
                 .Include(a => a.Doctor.User)
                 .Include(a => a.Location)
-                .Where(a => a.PatientID == patientId && 
-                           a.AppointmentDate >= DateTime.Today && 
+                .Where(a => a.PatientID == patientId &&
+                           a.AppointmentDate >= DateTime.Today &&
                            !a.IsCancelled)
                 .OrderBy(a => a.AppointmentDate)
                 .ThenBy(a => a.AppointmentTime)
@@ -249,7 +251,7 @@ namespace HealthCareApp.Services
         public async Task<int> GetTodayAppointmentsCountAsync(int doctorId)
         {
             return await _context.Appointments
-                .CountAsync(a => a.DoctorID == doctorId && 
+                .CountAsync(a => a.DoctorID == doctorId &&
                                a.AppointmentDate.Date == DateTime.Today);
         }
 
@@ -257,7 +259,7 @@ namespace HealthCareApp.Services
         {
             // Count all appointments from today onward
             return await _context.Appointments
-                .CountAsync(a => a.DoctorID == doctorId && 
+                .CountAsync(a => a.DoctorID == doctorId &&
                                a.AppointmentDate >= DateTime.Today);
         }
 
@@ -267,7 +269,7 @@ namespace HealthCareApp.Services
                 .Include(a => a.Patient)
                 .Include(a => a.Patient.User)
                 .Include(a => a.Location)
-                .Where(a => a.DoctorID == doctorId && 
+                .Where(a => a.DoctorID == doctorId &&
                            a.AppointmentDate.Date == DateTime.Today)
                 .OrderBy(a => a.AppointmentTime)
                 .ToListAsync();
@@ -279,7 +281,7 @@ namespace HealthCareApp.Services
                 .Include(a => a.Patient)
                 .Include(a => a.Patient.User)
                 .Include(a => a.Location)
-                .Where(a => a.DoctorID == doctorId && 
+                .Where(a => a.DoctorID == doctorId &&
                            a.AppointmentDate >= DateTime.Today)
                 .OrderBy(a => a.AppointmentDate)
                 .ThenBy(a => a.AppointmentTime)
