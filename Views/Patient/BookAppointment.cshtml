@@ -26,7 +26,13 @@
                                 {
                                     foreach (var doc in ViewBag.Doctors)
                                     {
-                                        <option value="@doc.DoctorID" data-available="@doc.AvailableTime" data-location="@doc.Location?.LocationID" data-fee="@doc.Fees">@doc.Name</option>
+                                        <option value="@doc.DoctorID" 
+                                                data-available="@doc.AvailableTime" 
+                                                data-location="@doc.Location?.LocationID" 
+                                                data-fee="@doc.Fees"
+                                                selected="@(Model.DoctorID == doc.DoctorID ? "selected" : null)">
+                                            @doc.Name (@doc.Specialty?.SpecialtyName)
+                                        </option>
                                     }
                                 }
                             </select>
@@ -52,14 +58,13 @@
                             <label for="locationDropdown" class="form-label">Location</label>
                             <select asp-for="LocationID" class="form-control" id="locationDropdown" name="LocationID">
                                 <option value="">-- Select Location --</option>
-                                @if (ViewBag.Doctors != null)
+                                @if (ViewBag.Locations != null)
                                 {
-                                    foreach (var doc in ViewBag.Doctors)
+                                    foreach (var location in ViewBag.Locations)
                                     {
-                                        if (doc.Location != null)
-                                        {
-                                            <option value="@doc.Location.LocationID">@doc.Location.LocationName</option>
-                                        }
+                                        <option value="@location.LocationID" selected="@(Model.LocationID == location.LocationID ? "selected" : null)">
+                                            @location.LocationName
+                                        </option>
                                     }
                                 }
                             </select>
@@ -98,11 +103,17 @@
             var availableTimeText = document.getElementById('availableTimeText');
             var locationDropdown = document.getElementById('locationDropdown');
             var doctorFeeText = document.getElementById('doctorFeeText');
-            doctorDropdown.addEventListener('change', function() {
+            
+            // Store all location options
+            var allLocationOptions = Array.from(locationDropdown.options).slice(1); // Exclude "Select Location" option
+            
+            function updateDoctorDetails() {
                 var selected = doctorDropdown.options[doctorDropdown.selectedIndex];
                 var available = selected.getAttribute('data-available');
                 var locationId = selected.getAttribute('data-location');
                 var fee = selected.getAttribute('data-fee');
+                
+                // Update available time
                 if (available && available.trim() !== '') {
                     availableTimeText.textContent = available;
                     availableTimeDiv.style.display = 'block';
@@ -110,18 +121,31 @@
                     availableTimeText.textContent = '';
                     availableTimeDiv.style.display = 'none';
                 }
-                if (locationId && locationId !== "null") {
-                    for (var i = 0; i < locationDropdown.options.length; i++) {
-                        if (locationDropdown.options[i].value === locationId) {
-                            locationDropdown.selectedIndex = i;
-                            break;
-                        }
+                
+                // Update doctor fee
+                doctorFeeText.textContent = fee ? ('Rs.' + fee) : '-';
+                
+                // Clear location dropdown except for the first option
+                locationDropdown.innerHTML = '<option value="">-- Select Location --</option>';
+                
+                // Add only the doctor's assigned location
+                if (locationId && locationId !== "null" && locationId !== "") {
+                    var matchingLocation = allLocationOptions.find(option => option.value === locationId);
+                    if (matchingLocation) {
+                        var newOption = matchingLocation.cloneNode(true);
+                        locationDropdown.appendChild(newOption);
+                        locationDropdown.selectedIndex = 1; // Select the doctor's location
                     }
-                } else {
-                    locationDropdown.selectedIndex = 0;
                 }
-                doctorFeeText.textContent = fee ? ('Rs' + fee) : '-';
-            });
+            }
+            
+            // Handle doctor dropdown change
+            doctorDropdown.addEventListener('change', updateDoctorDetails);
+            
+            // Initialize on page load if a doctor is pre-selected
+            if (doctorDropdown.selectedIndex > 0) {
+                updateDoctorDetails();
+            }
         });
     </script>
 }

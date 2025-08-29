@@ -57,8 +57,24 @@ namespace HealthCareApp.Controllers
             var doctors = await _appointmentService.SearchDoctorsAsync();
             ViewBag.Doctors = doctors;
 
-            // If doctorId is provided, pre-select the doctor (optional, not implemented here)
-            return View();
+            // Get all locations for dropdown
+            var locations = await _context.Locations.ToListAsync();
+            ViewBag.Locations = locations;
+
+            // If doctorId is provided, pre-select the doctor
+            var model = new BookAppointmentViewModel();
+            if (doctorId.HasValue)
+            {
+                model.DoctorID = doctorId.Value;
+                // Find the selected doctor's location
+                var selectedDoctor = doctors.FirstOrDefault(d => d.DoctorID == doctorId.Value);
+                if (selectedDoctor?.LocationID.HasValue == true)
+                {
+                    model.LocationID = selectedDoctor.LocationID.Value;
+                }
+            }
+
+            return View(model);
         }
 
         [HttpPost]
@@ -155,9 +171,11 @@ namespace HealthCareApp.Controllers
                 ModelState.AddModelError("", "An error occurred while booking the appointment.");
             }
 
-            // Repopulate doctors for the view
+            // Repopulate doctors and locations for the view
             var doctors = await _appointmentService.SearchDoctorsAsync();
             ViewBag.Doctors = doctors;
+            var locations = await _context.Locations.ToListAsync();
+            ViewBag.Locations = locations;
             return View(model);
         }
 
@@ -315,6 +333,25 @@ namespace HealthCareApp.Controllers
                 .ToListAsync();
 
             return View(feedbacks);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetDoctorLocations(int doctorId)
+        {
+            var doctor = await _context.Doctors
+                .Include(d => d.Location)
+                .FirstOrDefaultAsync(d => d.DoctorID == doctorId);
+            
+            var locations = new List<object>();
+            if (doctor?.Location != null)
+            {
+                locations.Add(new { 
+                    LocationID = doctor.Location.LocationID, 
+                    LocationName = doctor.Location.LocationName 
+                });
+            }
+            
+            return Json(locations);
         }
 
         [HttpPost]
