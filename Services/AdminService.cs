@@ -280,5 +280,121 @@ namespace HealthCareApp.Services
         }
 
         #endregion
+
+        #region Date-wise Reports
+
+        public async Task<AppointmentReportData> GetAppointmentReportAsync(DateTime fromDate, DateTime toDate)
+        {
+            var appointments = await _context.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .ThenInclude(d => d.Specialty)
+                .Where(a => a.AppointmentDate.Date >= fromDate.Date && a.AppointmentDate.Date <= toDate.Date)
+                .OrderBy(a => a.AppointmentDate)
+                .ToListAsync();
+
+            var appointmentDetails = appointments.Select(a => new AppointmentReportItem
+            {
+                AppointmentID = a.AppointmentID,
+                PatientName = a.Patient.Name,
+                DoctorName = a.Doctor.Name,
+                SpecialtyName = a.Doctor.Specialty?.SpecialtyName ?? "Unknown",
+                AppointmentDate = a.AppointmentDate,
+                AppointmentTime = a.AppointmentTime,
+                Status = a.AppointmentDate < DateTime.Now.Date ? "Completed" : "Pending",
+                IsCancelled = a.IsCancelled
+            }).ToList();
+
+            var specialtyGroups = appointments
+                .Where(a => !a.IsCancelled)
+                .GroupBy(a => a.Doctor.Specialty?.SpecialtyName ?? "Unknown")
+                .Select(g => new SpecialtyAppointmentCount
+                {
+                    SpecialtyName = g.Key,
+                    Count = g.Count()
+                }).ToList();
+
+            return new AppointmentReportData
+            {
+                FromDate = fromDate,
+                ToDate = toDate,
+                TotalAppointments = appointments.Count,
+                CompletedAppointments = appointments.Count(a => a.AppointmentDate < DateTime.Now.Date && !a.IsCancelled),
+                CancelledAppointments = appointments.Count(a => a.IsCancelled),
+                PendingAppointments = appointments.Count(a => a.AppointmentDate >= DateTime.Now.Date && !a.IsCancelled),
+                AppointmentDetails = appointmentDetails,
+                AppointmentsBySpecialty = specialtyGroups
+            };
+        }
+
+        public async Task<PaymentReportData> GetPaymentReportAsync(DateTime fromDate, DateTime toDate)
+        {
+            var payments = await _context.Payments
+                .Include(p => p.Patient)
+                .Where(p => p.PaymentDate.Date >= fromDate.Date && p.PaymentDate.Date <= toDate.Date)
+                .OrderBy(p => p.PaymentDate)
+                .ToListAsync();
+
+            var paymentDetails = payments.Select(p => new PaymentReportItem
+            {
+                PaymentID = p.PaymentID,
+                PatientName = p.Patient.Name,
+                BookingRef = p.BookingRef ?? "N/A",
+                Amount = p.Amount,
+                PaymentStatus = p.PaymentStatus,
+                PaymentDate = p.PaymentDate
+            }).ToList();
+
+            return new PaymentReportData
+            {
+                FromDate = fromDate,
+                ToDate = toDate,
+                TotalTransactions = payments.Count,
+                TotalRevenue = payments.Sum(p => p.Amount),
+                CompletedRevenue = payments.Where(p => p.PaymentStatus == "Completed").Sum(p => p.Amount),
+                PendingRevenue = payments.Where(p => p.PaymentStatus == "Pending").Sum(p => p.Amount),
+                CompletedPayments = payments.Count(p => p.PaymentStatus == "Completed"),
+                PendingPayments = payments.Count(p => p.PaymentStatus == "Pending"),
+                AverageTransactionValue = payments.Count > 0 ? payments.Average(p => p.Amount) : 0,
+                PaymentDetails = paymentDetails
+            };
+        }
+
+        public async Task<PatientReportData> GetPatientReportAsync(DateTime fromDate, DateTime toDate)
+        {
+            var patients = await _context.Patients
+                .Include(p => p.User)
+                .Include(p => p.Appointments)
+                .Where(p => p.User.CreatedDate.Date >= fromDate.Date && p.User.CreatedDate.Date <= toDate.Date)
+                .OrderBy(p => p.User.CreatedDate)
+                .ToListAsync();
+
+            var allPatients = await _context.Patients
+                .Include(p => p.User)
+                .ToListAsync();
+
+            var patientDetails = patients.Select(p => new PatientReportItem
+            {
+                PatientID = p.PatientID,
+                PatientName = p.Name,
+                Username = p.User?.Username ?? "N/A",
+                RegisteredDate = p.User?.CreatedDate ?? DateTime.Now,
+                IsActive = p.User?.IsActive ?? false,
+                TotalAppointments = p.Appointments?.Count ?? 0
+            }).ToList();
+
+            return new PatientReportData
+            {
+                FromDate = fromDate,
+                ToDate = toDate,
+                NewPatients = patients.Count,
+                TotalPatients = allPatients.Count,
+                ActivePatients = allPatients.Count(p => p.User.IsActive),
+                InactivePatients = allPatients.Count(p => !p.User.IsActive),
+                PatientDetails = patientDetails
+            };
+        }
+
+        #endregion
     }
 }

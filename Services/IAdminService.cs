@@ -28,5 +28,10 @@ namespace HealthCareApp.Services
         // Specialty and Location Management
         Task<List<Specialty>> GetAllSpecialtiesAsync();
         Task<List<Location>> GetAllLocationsAsync();
+        
+        // Date-wise Reports
+        Task<AppointmentReportData> GetAppointmentReportAsync(DateTime fromDate, DateTime toDate);
+        Task<PaymentReportData> GetPaymentReportAsync(DateTime fromDate, DateTime toDate);
+        Task<PatientReportData> GetPatientReportAsync(DateTime fromDate, DateTime toDate);
     }
 }

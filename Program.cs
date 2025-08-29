@@ -24,6 +24,7 @@ builder.Services.AddSession(options =>
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IPdfService, PdfService>();
 
 var app = builder.Build();
 
