@@ -18,26 +18,148 @@
             @if (Model != null && Model.Any())
             {
                 <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
                             <tr>
-                                <th>Name</th>
-                                <th>Phone</th>
-                                <th>Address</th>
+                                <th class="border-0 py-3"><i class="fas fa-user text-primary me-2"></i>Patient Info</th>
+                                <th class="border-0 py-3"><i class="fas fa-phone text-success me-2"></i>Contact</th>
+                                <th class="border-0 py-3"><i class="fas fa-map-marker-alt text-info me-2"></i>Address</th>
+                                <th class="border-0 py-3"><i class="fas fa-calendar text-warning me-2"></i>Last Visit</th>
+                                <th class="border-0 py-3"><i class="fas fa-file-medical text-danger me-2"></i>Medical History</th>
+                                <th class="border-0 py-3"><i class="fas fa-notes-medical text-secondary me-2"></i>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var p in Model)
                             {
-                                <tr>
-                                    <td>@p.Name</td>
-                                    <td>@p.PhoneNo</td>
-                                    <td>@p.Address</td>
+                                var lastAppointment = ViewBag.PatientAppointments?.ContainsKey(p.PatientID) == true 
+                                    ? ViewBag.PatientAppointments[p.PatientID] as HealthCareApp.Models.Appointment 
+                                    : null;
+                                var historyCount = p.MedicalHistories?.Count ?? 0;
+                                var lastHistory = p.MedicalHistories?.FirstOrDefault();
+                                
+                                <tr class="border-bottom">
+                                    <td class="py-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                <i class="fas fa-user text-white"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold">@p.Name</div>
+                                                <small class="text-muted">Patient ID: @p.PatientID</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-4">
+                                        <div class="fw-bold">@(p.PhoneNo ?? "N/A")</div>
+                                    </td>
+                                    <td class="py-4">
+                                        <div>@(p.Address ?? "No address provided")</div>
+                                    </td>
+                                    <td class="py-4">
+                                        @if (lastAppointment != null)
+                                        {
+                                            <div class="fw-bold">@lastAppointment.AppointmentDate.ToString("MMM dd, yyyy")</div>
+                                            <small class="text-muted">@lastAppointment.AppointmentTime.ToString(@"hh\:mm")</small>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No visits yet</span>
+                                        }
+                                    </td>
+                                    <td class="py-4">
+                                        @if (historyCount > 0)
+                                        {
+                                            <div class="d-flex align-items-center">
+                                                <span class="badge bg-success rounded-pill me-2">@historyCount</span>
+                                                <small class="text-muted">records</small>
+                                            </div>
+                                            @if (lastHistory != null)
+                                            {
+                                                <small class="text-muted d-block mt-1">
+                                                    Last: @lastHistory.RecordDate.ToString("MMM dd, yyyy")
+                                                </small>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary rounded-pill">No records</span>
+                                        }
+                                    </td>
+                                    <td class="py-4">
+                                        <div class="btn-group" role="group">
+                                            @if (historyCount > 0)
+                                            {
+                                                <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#historyModal_@p.PatientID">
+                                                    <i class="fas fa-history me-1"></i>View History
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">No history</span>
+                                            }
+                                        </div>
+                                    </td>
                                 </tr>
                             }
                         </tbody>
                     </table>
                 </div>
+                
+                @foreach (var p in Model)
+                {
+                    @if (p.MedicalHistories?.Any() == true)
+                    {
+                        <div class="modal fade" id="historyModal_@p.PatientID" tabindex="-1">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            <i class="fas fa-file-medical text-primary me-2"></i>
+                                            Medical History - @p.Name
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        @foreach (var history in p.MedicalHistories)
+                                        {
+                                            <div class="card mb-3 border-start border-primary border-3">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                                        <h6 class="card-title text-primary mb-0">
+                                                            <i class="fas fa-calendar-day me-1"></i>
+                                                            @history.RecordDate.ToString("MMMM dd, yyyy")
+                                                        </h6>
+                                                        <small class="text-muted">@history.RecordDate.ToString("hh:mm tt")</small>
+                                                    </div>
+                                                    
+                                                    @if (!string.IsNullOrEmpty(history.Notes))
+                                                    {
+                                                        <div class="mb-3">
+                                                            <strong><i class="fas fa-sticky-note text-info me-1"></i>Consultation Notes:</strong>
+                                                            <p class="mt-1 mb-0">@history.Notes</p>
+                                                        </div>
+                                                    }
+                                                    
+                                                    @if (!string.IsNullOrEmpty(history.Medicine))
+                                                    {
+                                                        <div>
+                                                            <strong><i class="fas fa-prescription-bottle text-success me-1"></i>Prescription:</strong>
+                                                            <p class="mt-1 mb-0">@history.Medicine</p>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
             }
             else
             {

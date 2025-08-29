@@ -36,14 +36,9 @@ try
         var context = scope.ServiceProvider.GetRequiredService<HealthCareDbContext>();
         context.Database.OpenConnection();
         context.Database.CloseConnection();
-        
+
         Console.WriteLine("✅ Database connection successful!");
         Console.WriteLine("🚀 HealthCare Management App is running successfully!");
-        Console.WriteLine($"📊 Connected to: {builder.Configuration.GetConnectionString("DefaultConnection")}");
-        
-        // Initialize database with sample data
-        await DbInitializer.Initialize(context);
-        Console.WriteLine("✅ Database initialized with sample data!");
     }
 }
 catch (Exception ex)

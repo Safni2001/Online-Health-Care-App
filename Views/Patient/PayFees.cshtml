@@ -46,7 +46,8 @@
         <div class="col-md-6">
             <div class="card border-0 shadow-sm">
                 <div class="card-body text-center">
-                    <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                        style="width: 60px; height: 60px;">
                         <i class="fas fa-check-circle fa-2x text-success"></i>
                     </div>
                     <h4 class="text-success mb-1">Rs.@ViewBag.TotalPaid</h4>
@@ -57,7 +58,8 @@
         <div class="col-md-6">
             <div class="card border-0 shadow-sm">
                 <div class="card-body text-center">
-                    <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                        style="width: 60px; height: 60px;">
                         <i class="fas fa-clock fa-2x text-danger"></i>
                     </div>
                     <h4 class="text-danger mb-1">Rs.@ViewBag.TotalDue</h4>
@@ -69,13 +71,14 @@
 
     <!-- Payments Table -->
     <div class="card border-0 shadow-sm">
-        <div class="card-header bg-gradient-primary text-white py-4">
+        <div class="card-header bg-gradient-primary py-4">
             <h5 class="m-0 font-weight-bold">
                 <i class="fas fa-history"></i> Payment History
             </h5>
         </div>
         <div class="card-body p-4">
-            @if (paymentsWithDoctors != null && ((System.Collections.IEnumerable)paymentsWithDoctors).Cast<dynamic>().Any())
+            @if (paymentsWithDoctors != null &&
+                        ((System.Collections.IEnumerable?)paymentsWithDoctors)?.Cast<dynamic>().Any() == true)
             {
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
@@ -85,20 +88,18 @@
                                 <th class="border-0 py-3"><i class="fas fa-user-md text-success me-2"></i>Doctor</th>
                                 <th class="border-0 py-3"><i class="fas fa-receipt text-info me-2"></i>Booking ID</th>
                                 <th class="border-0 py-3"><i class="fas fa-dollar-sign text-success me-2"></i>Total Fee</th>
-                                <th class="border-0 py-3"><i class="fas fa-money-bill-wave text-warning me-2"></i>Remaining</th>
+                                <th class="border-0 py-3"><i class="fas fa-money-bill-wave text-warning me-2"></i>Remaining
+                                </th>
                                 <th class="border-0 py-3"><i class="fas fa-info-circle text-secondary me-2"></i>Status</th>
                                 <th class="border-0 py-3"><i class="fas fa-cogs text-danger me-2"></i>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in paymentsWithDoctors)
+                            @foreach (var item in paymentsWithDoctors!)
                             {
                                 <tr class="border-bottom">
                                     <td class="py-4">
                                         <div class="d-flex align-items-center">
-                                            <div class="bg-primary bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                                <i class="fas fa-calendar-day text-primary"></i>
-                                            </div>
                                             <div>
                                                 <div class="fw-bold">@item.Payment.PaymentDate.ToString("MMM dd, yyyy")</div>
                                                 <small class="text-muted">@item.Payment.PaymentDate.ToString("hh:mm tt")</small>
@@ -107,17 +108,11 @@
                                     </td>
                                     <td class="py-4">
                                         <div class="d-flex align-items-center">
-                                            <div class="bg-success bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                                <i class="fas fa-user-md text-success"></i>
-                                            </div>
                                             <div class="fw-bold">@item.DoctorName</div>
                                         </div>
                                     </td>
                                     <td class="py-4">
                                         <div class="d-flex align-items-center">
-                                            <div class="bg-info bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                                <i class="fas fa-hashtag text-info"></i>
-                                            </div>
                                             <div>
                                                 <div class="fw-bold">@(item.Payment.BookingRef ?? "N/A")</div>
                                             </div>
@@ -148,11 +143,10 @@
                                     <td class="py-4">
                                         @if (item.Payment.PaymentStatus != "Completed")
                                         {
-                                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#paymentModal" 
-                                                    data-payment-id="@item.Payment.PaymentID" 
-                                                    data-amount="@item.Payment.Amount"
-                                                    data-booking-id="@item.Payment.BookingRef"
-                                                    data-doctor="@item.DoctorName">
+                                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                                data-bs-target="#paymentModal" data-payment-id="@item.Payment.PaymentID"
+                                                data-amount="@item.Payment.Amount" data-booking-id="@item.Payment.BookingRef"
+                                                data-doctor="@item.DoctorName">
                                                 <i class="fas fa-credit-card me-1"></i> Pay Now
                                             </button>
                                         }
@@ -172,11 +166,13 @@
             else
             {
                 <div class="text-center py-5">
-                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 100px; height: 100px;">
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-4"
+                        style="width: 100px; height: 100px;">
                         <i class="fas fa-credit-card fa-3x text-muted"></i>
                     </div>
                     <h5 class="text-muted mb-2">No Payment Records Found</h5>
-                    <p class="text-muted mb-4">Your pending consultation fees will appear here when you book appointments.</p>
+                    <p class="text-muted mb-4">Your pending consultation fees will appear here when you book appointments.
+                    </p>
                     <a href="@Url.Action("BookAppointment", "Patient")" class="btn btn-primary">
                         <i class="fas fa-calendar-plus me-1"></i> Book Appointment
                     </a>
@@ -194,12 +190,13 @@
                 <h5 class="modal-title" id="paymentModalLabel">
                     <i class="fas fa-credit-card"></i> Complete Payment
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form asp-action="PayFees" method="post" id="paymentForm">
                     <input type="hidden" name="PaymentID" id="modalPaymentId" />
-                    
+
                     <!-- Payment Summary -->
                     <div class="alert alert-info border-0 shadow-sm mb-4">
                         <h6 class="alert-heading">Payment Summary</h6>
@@ -209,7 +206,7 @@
                             <div class="col-sm-6"><strong>Amount Due:</strong> Rs.<span id="modalAmount">0</span></div>
                         </div>
                     </div>
-                    
+
                     <!-- Payment Amount -->
                     <div class="mb-4">
                         <label for="modalPayAmount" class="form-label fw-bold">
@@ -217,11 +214,12 @@
                         </label>
                         <div class="input-group">
                             <span class="input-group-text">Rs.</span>
-                            <input type="number" step="0.01" min="0" class="form-control form-control-lg" id="modalPayAmount" name="Amount" placeholder="Enter payment amount" required />
+                            <input type="number" step="0.01" min="0" class="form-control form-control-lg"
+                                id="modalPayAmount" name="Amount" placeholder="Enter payment amount" required />
                         </div>
                         <small class="form-text text-muted">Enter the amount you want to pay now.</small>
                     </div>
-                    
+
                     <!-- Banking Details -->
                     <div class="card border-success mb-4">
                         <div class="card-header bg-light">
@@ -235,13 +233,15 @@
                                     <label for="modalBankName" class="form-label">
                                         <i class="fas fa-university text-primary"></i> Bank Name
                                     </label>
-                                    <input type="text" class="form-control" id="modalBankName" name="BankName" placeholder="e.g., Chase Bank" />
+                                    <input type="text" class="form-control" id="modalBankName" name="BankName"
+                                        placeholder="e.g., Chase Bank" />
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="modalCardNumber" class="form-label">
                                         <i class="fas fa-credit-card text-info"></i> Card Number
                                     </label>
-                                    <input type="text" class="form-control" id="modalCardNumber" name="CardNumber" placeholder="1234-5678-9012-3456" maxlength="19" />
+                                    <input type="text" class="form-control" id="modalCardNumber" name="CardNumber"
+                                        placeholder="1234-5678-9012-3456" maxlength="19" />
                                 </div>
                             </div>
                             <div class="row">
@@ -249,13 +249,15 @@
                                     <label for="modalExpiryDate" class="form-label">
                                         <i class="fas fa-calendar-alt text-warning"></i> Expiry Date
                                     </label>
-                                    <input type="text" class="form-control" id="modalExpiryDate" name="ExpiryDate" placeholder="MM/YYYY" maxlength="7" />
+                                    <input type="text" class="form-control" id="modalExpiryDate" name="ExpiryDate"
+                                        placeholder="MM/YYYY" maxlength="7" />
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="modalCVN" class="form-label">
                                         <i class="fas fa-lock text-danger"></i> CVN/CVC
                                     </label>
-                                    <input type="password" class="form-control" id="modalCVN" name="CVN" placeholder="123" maxlength="4" />
+                                    <input type="password" class="form-control" id="modalCVN" name="CVN"
+                                        placeholder="123" maxlength="4" />
                                 </div>
                             </div>
                         </div>
@@ -276,7 +278,7 @@
 
 @section Scripts {
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             var paymentModal = document.getElementById('paymentModal');
             paymentModal.addEventListener('show.bs.modal', function (event) {
                 var button = event.relatedTarget;
@@ -284,7 +286,7 @@
                 var amount = button.getAttribute('data-amount');
                 var bookingId = button.getAttribute('data-booking-id');
                 var doctor = button.getAttribute('data-doctor');
-                
+
                 // Update modal content
                 document.getElementById('modalPaymentId').value = paymentId;
                 document.getElementById('modalAmount').textContent = amount;
@@ -292,11 +294,11 @@
                 document.getElementById('modalBookingId').textContent = bookingId || 'N/A';
                 document.getElementById('modalDoctor').textContent = doctor || 'General';
             });
-            
+
             // Card number formatting
             var cardNumberInput = document.getElementById('modalCardNumber');
             if (cardNumberInput) {
-                cardNumberInput.addEventListener('input', function(e) {
+                cardNumberInput.addEventListener('input', function (e) {
                     var value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
                     var formattedValue = value.match(/.{1,4}/g)?.join('-') || value;
                     if (formattedValue !== e.target.value) {
@@ -304,14 +306,14 @@
                     }
                 });
             }
-            
+
             // Expiry date formatting
             var expiryInput = document.getElementById('modalExpiryDate');
             if (expiryInput) {
-                expiryInput.addEventListener('input', function(e) {
+                expiryInput.addEventListener('input', function (e) {
                     var value = e.target.value.replace(/\D/g, '');
                     if (value.length >= 2) {
-                        value = value.substring(0,2) + '/' + value.substring(2,6);
+                        value = value.substring(0, 2) + '/' + value.substring(2, 6);
                     }
                     e.target.value = value;
                 });

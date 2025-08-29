@@ -4,7 +4,7 @@
 
 <div class="container-fluid">
     <!-- Header Section -->
-    <div class="row mb-4">
+    <div class="row mb-2">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
@@ -19,117 +19,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Welcome Card -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-0 shadow-lg">
-                <div class="card-body bg-gradient-primary text-white p-4 rounded">
-                    <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <h4 class="card-title mb-2">
-                                <i class="fas fa-chart-line"></i> Your Practice Overview
-                            </h4>
-                            <p class="card-text mb-0">
-                                Track your appointments, manage patient consultations, and stay organized with your daily schedule.
-                            </p>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <div class="bg-white bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                                <i class="fas fa-heartbeat fa-2x text-white"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Statistics Cards -->
-    <div class="row mb-5">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body p-4">
-                    <div class="row align-items-center">
-                        <div class="col-8">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-2">
-                                Today's Appointments
-                            </div>
-                            <div class="h4 mb-0 font-weight-bold text-gray-800">@ViewBag.TodayAppointments</div>
-                        </div>
-                        <div class="col-4 text-end">
-                            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                <i class="fas fa-calendar-day fa-lg text-primary"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body p-4">
-                    <div class="row align-items-center">
-                        <div class="col-8">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-2">
-                                Total Patients
-                            </div>
-                            <div class="h4 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalPatients</div>
-                        </div>
-                        <div class="col-4 text-end">
-                            <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                <i class="fas fa-users fa-lg text-success"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body p-4">
-                    <div class="row align-items-center">
-                        <div class="col-8">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-2">
-                                Pending Appointments
-                            </div>
-                            <div class="h4 mb-0 font-weight-bold text-gray-800">@ViewBag.PendingAppointments</div>
-                        </div>
-                        <div class="col-4 text-end">
-                            <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                <i class="fas fa-clock fa-lg text-warning"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body p-4">
-                    <div class="row align-items-center">
-                        <div class="col-8">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-2">
-                                Rating
-                            </div>
-                            <div class="h4 mb-0 font-weight-bold text-gray-800">
-                                @ViewBag.AverageRating <small class="text-muted">/5.0</small>
-                            </div>
-                        </div>
-                        <div class="col-4 text-end">
-                            <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                <i class="fas fa-star fa-lg text-info"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Quick Actions Section -->
     <div class="row mb-5">
         <div class="col-12">
@@ -142,110 +31,42 @@
                 <div class="card-body p-4">
                     <div class="row g-3">
                         <div class="col-lg-3 col-md-6">
-                            <a href="@Url.Action("Appointments", "Doctor")" class="btn btn-primary btn-lg w-100 h-100 d-flex flex-column align-items-center justify-content-center text-decoration-none" style="min-height: 120px;">
+                            <a href="@Url.Action("Appointments", "Doctor")"
+                                class="btn btn-primary btn-lg w-100 h-100 d-flex flex-column align-items-center justify-content-center text-decoration-none"
+                                style="min-height: 120px;">
                                 <i class="fas fa-calendar-alt fa-2x mb-3"></i>
                                 <span class="fw-bold">View Appointments</span>
                                 <small class="text-white-50 mt-1">Manage your schedule</small>
                             </a>
                         </div>
                         <div class="col-lg-3 col-md-6">
-                            <a href="@Url.Action("Patients", "Doctor")" class="btn btn-success btn-lg w-100 h-100 d-flex flex-column align-items-center justify-content-center text-decoration-none" style="min-height: 120px;">
+                            <a href="@Url.Action("Patients", "Doctor")"
+                                class="btn btn-success btn-lg w-100 h-100 d-flex flex-column align-items-center justify-content-center text-decoration-none"
+                                style="min-height: 120px;">
                                 <i class="fas fa-user-injured fa-2x mb-3"></i>
                                 <span class="fw-bold">My Patients</span>
                                 <small class="text-white-50 mt-1">Patient records</small>
                             </a>
                         </div>
                         <div class="col-lg-3 col-md-6">
-                            <a href="@Url.Action("Profile", "Doctor")" class="btn btn-info btn-lg w-100 h-100 d-flex flex-column align-items-center justify-content-center text-decoration-none" style="min-height: 120px;">
+                            <a href="@Url.Action("Profile", "Doctor")"
+                                class="btn btn-info btn-lg w-100 h-100 d-flex flex-column align-items-center justify-content-center text-decoration-none"
+                                style="min-height: 120px;">
                                 <i class="fas fa-user-edit fa-2x mb-3"></i>
                                 <span class="fw-bold">Update Profile</span>
                                 <small class="text-white-50 mt-1">Edit your information</small>
                             </a>
                         </div>
                         <div class="col-lg-3 col-md-6">
-                            <a href="@Url.Action("Schedule", "Doctor")" class="btn btn-warning btn-lg w-100 h-100 d-flex flex-column align-items-center justify-content-center text-decoration-none" style="min-height: 120px;">
+                            <a href="@Url.Action("Schedule", "Doctor")"
+                                class="btn btn-warning btn-lg w-100 h-100 d-flex flex-column align-items-center justify-content-center text-decoration-none"
+                                style="min-height: 120px;">
                                 <i class="fas fa-calendar-check fa-2x mb-3"></i>
                                 <span class="fw-bold">Manage Schedule</span>
                                 <small class="text-white-50 mt-1">Consultation notes</small>
                             </a>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Today's Schedule Summary -->
-    <div class="row">
-        <div class="col-lg-8 mb-4">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-4 border-bottom">
-                    <h5 class="m-0 font-weight-bold text-dark">
-                        <i class="fas fa-calendar-day text-primary"></i> Today's Schedule
-                    </h5>
-                </div>
-                <div class="card-body p-4">
-                    @if (ViewBag.TodayAppointments > 0)
-                    {
-                        <div class="alert alert-primary border-0 shadow-sm">
-                            <div class="d-flex align-items-center">
-                                <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
-                                    <i class="fas fa-info-circle text-primary"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h6 class="alert-heading mb-1">You have @ViewBag.TodayAppointments appointment(s) scheduled for today</h6>
-                                    <p class="mb-0">Click below to view your complete schedule and manage consultations.</p>
-                                </div>
-                                <a href="@Url.Action("Appointments", "Doctor")" class="btn btn-primary">View Schedule</a>
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="text-center py-5">
-                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                                <i class="fas fa-calendar-times fa-2x text-muted"></i>
-                            </div>
-                            <h6 class="text-muted">No appointments scheduled for today</h6>
-                            <p class="text-muted mb-0">Your schedule will appear here when patients book appointments</p>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4 mb-4">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-4 border-bottom">
-                    <h5 class="m-0 font-weight-bold text-dark">
-                        <i class="fas fa-chart-bar text-success"></i> Quick Stats
-                    </h5>
-                </div>
-                <div class="card-body p-4">
-                    @if (ViewBag.PendingAppointments > 0)
-                    {
-                        <div class="alert alert-warning border-0 shadow-sm">
-                            <div class="d-flex align-items-center">
-                                <div class="bg-warning bg-opacity-10 rounded-circle p-2 me-3">
-                                    <i class="fas fa-clock text-warning"></i>
-                                </div>
-                                <div>
-                                    <h6 class="alert-heading mb-1">Pending Reviews</h6>
-                                    <p class="mb-0">@ViewBag.PendingAppointments appointment(s) need attention</p>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="text-center py-3">
-                            <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
-                                <i class="fas fa-check text-success"></i>
-                            </div>
-                            <h6 class="text-success">All caught up!</h6>
-                            <p class="text-muted mb-0">No pending appointments</p>
-                        </div>
-                    }
                 </div>
             </div>
         </div>

@@ -1,0 +1,12 @@
+SELECT TOP (1000)
+    [PaymentID]
+      , [BookingRef]
+      , [PatientID]
+      , [Amount]
+      , [PaymentStatus]
+      , [PaymentDate]
+      , [BankName]
+      , [CardNumber]
+      , [ExpiryDate]
+      , [CVN]
+FROM [HealthCareManagementDb].[dbo].[Payments]

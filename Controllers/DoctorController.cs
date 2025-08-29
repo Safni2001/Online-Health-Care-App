@@ -124,6 +124,20 @@ namespace HealthCareApp.Controllers
             {
                 var appointments = await _appointmentService.GetAppointmentsByDoctorAsync(doctorId.Value);
                 var patients = appointments.Select(a => a.Patient).DistinctBy(p => p.PatientID).ToList();
+                
+                // Get medical history count and last visit for each patient
+                foreach (var patient in patients)
+                {
+                    patient.MedicalHistories = await _context.MedicalHistories
+                        .Where(mh => mh.PatientID == patient.PatientID && mh.DoctorID == doctorId.Value)
+                        .OrderByDescending(mh => mh.RecordDate)
+                        .ToListAsync();
+                }
+                
+                // Get last appointment date for each patient
+                ViewBag.PatientAppointments = appointments.GroupBy(a => a.PatientID)
+                    .ToDictionary(g => g.Key, g => g.OrderByDescending(a => a.AppointmentDate).First());
+                
                 return View(patients);
             }
 

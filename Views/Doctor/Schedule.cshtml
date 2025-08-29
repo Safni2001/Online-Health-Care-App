@@ -1,8 +1,10 @@
 @model HealthCareApp.Models.Doctor
 @{
     ViewData["Title"] = "Manage Schedule";
-    var appts = ViewBag.Appointments as List<HealthCareApp.Models.Appointment> ?? new List<HealthCareApp.Models.Appointment>();
-    var medicalHistories = ViewBag.MedicalHistories as List<HealthCareApp.Models.MedicalHistory> ?? new List<HealthCareApp.Models.MedicalHistory>();
+    var appts = ViewBag.Appointments as List<HealthCareApp.Models.Appointment> ?? new
+    List<HealthCareApp.Models.Appointment>();
+    var medicalHistories = ViewBag.MedicalHistories as List<HealthCareApp.Models.MedicalHistory> ?? new
+    List<HealthCareApp.Models.MedicalHistory>();
 }
 
 <div class="container-fluid">
@@ -41,11 +43,6 @@
     <div class="row">
         <div class="col-12">
             <div class="card border-0 shadow-sm">
-                <div class="card-header bg-gradient-primary text-white py-4">
-                    <h5 class="m-0 font-weight-bold">
-                        <i class="fas fa-calendar-alt"></i> Your Upcoming Appointments
-                    </h5>
-                </div>
                 <div class="card-body">
                     @if (appts.Any())
                     {
@@ -55,9 +52,13 @@
                                     <tr>
                                         <th class="border-0 py-3"><i class="fas fa-calendar text-primary me-2"></i>Date</th>
                                         <th class="border-0 py-3"><i class="fas fa-clock text-success me-2"></i>Time</th>
-                                        <th class="border-0 py-3"><i class="fas fa-user-injured text-info me-2"></i>Patient</th>
-                                        <th class="border-0 py-3"><i class="fas fa-edit text-warning me-2"></i>Reschedule</th>
-                                        <th class="border-0 py-3"><i class="fas fa-notes-medical text-danger me-2"></i>Consultation Notes / Prescription</th>
+                                        <th class="border-0 py-3"><i class="fas fa-user-injured text-info me-2"></i>Patient
+                                        </th>
+                                        <th class="border-0 py-3"><i class="fas fa-edit text-warning me-2"></i>Reschedule
+                                        </th>
+                                        <th class="border-0 py-3"><i
+                                                class="fas fa-notes-medical text-danger me-2"></i>Consultation Notes /
+                                            Prescription</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -67,18 +68,21 @@
                                         var timeId = $"newTime_{a.AppointmentID}";
                                         var notesId = $"notes_{a.AppointmentID}";
                                         var rxId = $"medicine_{a.AppointmentID}";
-                                        
+
                                         // Find existing medical history for this patient and appointment date
-                                        var existingHistory = medicalHistories.FirstOrDefault(mh => 
-                                            mh.PatientID == a.PatientID && 
+                                        var existingHistory = medicalHistories.FirstOrDefault(mh =>
+                                            mh.PatientID == a.PatientID &&
                                             mh.RecordDate.Date == a.AppointmentDate.Date);
                                         
+                                        // If no record for this specific date, get the most recent record for reference
+                                        var recentHistory = existingHistory ?? medicalHistories
+                                            .Where(mh => mh.PatientID == a.PatientID)
+                                            .OrderByDescending(mh => mh.RecordDate)
+                                            .FirstOrDefault();
+
                                         <tr class="border-bottom">
                                             <td class="py-4">
                                                 <div class="d-flex align-items-center">
-                                                    <div class="bg-primary bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                                        <i class="fas fa-calendar-day text-primary"></i>
-                                                    </div>
                                                     <div>
                                                         <div class="fw-bold">@a.AppointmentDate.ToString("MMM dd, yyyy")</div>
                                                         <small class="text-muted">@a.AppointmentDate.ToString("dddd")</small>
@@ -87,17 +91,11 @@
                                             </td>
                                             <td class="py-4">
                                                 <div class="d-flex align-items-center">
-                                                    <div class="bg-success bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                                        <i class="fas fa-clock text-success"></i>
-                                                    </div>
                                                     <div class="fw-bold">@a.AppointmentTime.ToString(@"hh\:mm")</div>
                                                 </div>
                                             </td>
                                             <td class="py-4">
                                                 <div class="d-flex align-items-center">
-                                                    <div class="bg-info bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                                        <i class="fas fa-user text-info"></i>
-                                                    </div>
                                                     <div>
                                                         <div class="fw-bold">@a.Patient?.Name</div>
                                                         <small class="text-muted">Patient ID: @a.PatientID</small>
@@ -108,14 +106,18 @@
                                                 <div class="card border-0 shadow-sm">
                                                     <div class="card-body p-3">
                                                         <form asp-action="RescheduleAppointment" method="post">
-                                                            <input type="hidden" name="appointmentId" value="@a.AppointmentID" />
+                                                            <input type="hidden" name="appointmentId"
+                                                                value="@a.AppointmentID" />
                                                             <div class="mb-2">
                                                                 <label for="@dateId" class="form-label fw-bold">New Date</label>
-                                                                <input id="@dateId" type="date" name="newDate" class="form-control form-control-sm" value="@a.AppointmentDate.ToString("yyyy-MM-dd")" />
+                                                                <input id="@dateId" type="date" name="newDate"
+                                                                    class="form-control form-control-sm"
+                                                                    value="@a.AppointmentDate.ToString("yyyy-MM-dd")" />
                                                             </div>
                                                             <div class="mb-3">
                                                                 <label for="@timeId" class="form-label fw-bold">New Time</label>
-                                                                <input id="@timeId" type="time" name="newTime" class="form-control form-control-sm" />
+                                                                <input id="@timeId" type="time" name="newTime"
+                                                                    class="form-control form-control-sm" />
                                                             </div>
                                                             <button type="submit" class="btn btn-warning btn-sm w-100">
                                                                 <i class="fas fa-calendar-alt me-1"></i> Reschedule
@@ -127,22 +129,63 @@
                                             <td class="py-4">
                                                 <div class="card border-0 shadow-sm">
                                                     <div class="card-body p-3">
+                                                        @if (existingHistory != null)
+                                                        {
+                                                            <div class="alert alert-info alert-sm py-2 mb-3">
+                                                                <small>
+                                                                    <i class="fas fa-info-circle me-1"></i>
+                                                                    Record exists for @existingHistory.RecordDate.ToString("MMM dd, yyyy")
+                                                                </small>
+                                                            </div>
+                                                        }
+                                                        else if (recentHistory != null)
+                                                        {
+                                                            <div class="alert alert-warning alert-sm py-2 mb-3">
+                                                                <small>
+                                                                    <i class="fas fa-history me-1"></i>
+                                                                    Last record: @recentHistory.RecordDate.ToString("MMM dd, yyyy") (shown for reference)
+                                                                </small>
+                                                            </div>
+                                                        }
+                                                        
                                                         <form asp-action="UpdateConsultationNotes" method="post">
-                                                            <input type="hidden" name="appointmentId" value="@a.AppointmentID" />
+                                                            <input type="hidden" name="appointmentId"
+                                                                value="@a.AppointmentID" />
                                                             <div class="mb-3">
                                                                 <label for="@notesId" class="form-label fw-bold">
-                                                                    <i class="fas fa-sticky-note text-primary me-1"></i> Consultation Notes
+                                                                    <i class="fas fa-sticky-note text-primary me-1"></i>
+                                                                    Consultation Notes
                                                                 </label>
-                                                                <textarea id="@notesId" name="notes" class="form-control" rows="3" placeholder="Enter consultation notes...">@(existingHistory?.Notes ?? "")</textarea>
+                                                                <textarea id="@notesId" name="notes" class="form-control"
+                                                            rows="3"
+                                                            placeholder="Enter consultation notes...">@(existingHistory?.Notes ?? (recentHistory != null && existingHistory == null ? "" : ""))</textarea>
+                                                                @if (recentHistory != null && existingHistory == null && !string.IsNullOrEmpty(recentHistory.Notes))
+                                                                {
+                                                                    <small class="text-muted mt-1 d-block">
+                                                                        <strong>Previous notes:</strong> @recentHistory.Notes
+                                                                    </small>
+                                                                }
                                                             </div>
                                                             <div class="mb-3">
                                                                 <label for="@rxId" class="form-label fw-bold">
-                                                                    <i class="fas fa-prescription-bottle-alt text-success me-1"></i> Prescription
+                                                                    <i
+                                                                        class="fas fa-prescription-bottle-alt text-success me-1"></i>
+                                                                    Prescription
                                                                 </label>
-                                                                <textarea id="@rxId" name="medicine" class="form-control" rows="3" placeholder="Enter prescription details...">@(existingHistory?.Medicine ?? "")</textarea>
+                                                                <textarea id="@rxId" name="medicine" class="form-control"
+                                                            rows="3"
+                                                            placeholder="Enter prescription details...">@(existingHistory?.Medicine ?? (recentHistory != null && existingHistory == null ? "" : ""))</textarea>
+                                                                @if (recentHistory != null && existingHistory == null && !string.IsNullOrEmpty(recentHistory.Medicine))
+                                                                {
+                                                                    <small class="text-muted mt-1 d-block">
+                                                                        <strong>Previous prescription:</strong> @recentHistory.Medicine
+                                                                    </small>
+                                                                }
                                                             </div>
-                                                            <button type="submit" class="btn @(existingHistory != null ? "btn-info" : "btn-success") btn-sm w-100">
-                                                                <i class="fas fa-save me-1"></i> @(existingHistory != null ? "Update Notes" : "Save Notes")
+                                                            <button type="submit"
+                                                                class="btn @(existingHistory != null ? "btn-info" : "btn-success") btn-sm w-100">
+                                                                <i class="fas fa-save me-1"></i> @(existingHistory != null ?
+                                                                                                                        "Update Notes" : "Save Notes")
                                                             </button>
                                                         </form>
                                                     </div>
@@ -157,7 +200,8 @@
                     else
                     {
                         <div class="text-center py-5">
-                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 100px; height: 100px;">
+                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-4"
+                                style="width: 100px; height: 100px;">
                                 <i class="fas fa-calendar-times fa-3x text-muted"></i>
                             </div>
                             <h5 class="text-muted mb-2">No Upcoming Appointments</h5>
