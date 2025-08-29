@@ -11,6 +11,7 @@ namespace HealthCareApp.Services
         Task<bool> UpdateDoctorAsync(Doctor doctor);
         Task<bool> DeactivateDoctorAsync(int doctorId);
         Task<bool> ActivateDoctorAsync(int doctorId);
+        Task<bool> DeleteDoctorAsync(int doctorId);
         
         // Patient Management
         Task<List<Patient>> GetAllPatientsAsync();

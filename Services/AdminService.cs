@@ -126,6 +126,58 @@ namespace HealthCareApp.Services
             }
         }
 
+        public async Task<bool> DeleteDoctorAsync(int doctorId)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var doctor = await _context.Doctors
+                    .Include(d => d.User)
+                    .FirstOrDefaultAsync(d => d.DoctorID == doctorId);
+
+                if (doctor == null)
+                {
+                    return false;
+                }
+
+                // Delete related records first to avoid foreign key constraint violations
+                
+                // Delete feedback records
+                var feedbackRecords = await _context.Feedbacks
+                    .Where(f => f.DoctorID == doctorId)
+                    .ToListAsync();
+                _context.Feedbacks.RemoveRange(feedbackRecords);
+
+                // Delete medical history records
+                var medicalHistoryRecords = await _context.MedicalHistories
+                    .Where(mh => mh.DoctorID == doctorId)
+                    .ToListAsync();
+                _context.MedicalHistories.RemoveRange(medicalHistoryRecords);
+
+                // Delete appointments
+                var appointments = await _context.Appointments
+                    .Where(a => a.DoctorID == doctorId)
+                    .ToListAsync();
+                _context.Appointments.RemoveRange(appointments);
+
+                // Finally, delete the doctor and user
+                _context.Doctors.Remove(doctor);
+                if (doctor.User != null)
+                {
+                    _context.Users.Remove(doctor.User);
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return true;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                return false;
+            }
+        }
+
         #endregion
 
         #region Patient Management

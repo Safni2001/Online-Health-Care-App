@@ -145,26 +145,14 @@ namespace HealthCareApp.Controllers
         {
             try
             {
-                var doctor = await _adminService.GetDoctorByIdAsync(doctorId);
-                if (doctor != null)
+                var result = await _adminService.DeleteDoctorAsync(doctorId);
+                if (result)
                 {
-                    // Remove the doctor and their user account
-                    var context = HttpContext.RequestServices.GetService(typeof(HealthCareApp.Data.HealthCareDbContext)) as HealthCareApp.Data.HealthCareDbContext;
-                    if (context != null)
-                    {
-                        var user = doctor.User;
-                        context.Doctors.Remove(doctor);
-                        if (user != null)
-                        {
-                            context.Users.Remove(user);
-                        }
-                        await context.SaveChangesAsync();
-                        TempData["SuccessMessage"] = "Doctor deleted successfully!";
-                    }
+                    TempData["SuccessMessage"] = "Doctor deleted successfully!";
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Doctor not found.";
+                    TempData["ErrorMessage"] = "Failed to delete doctor. Doctor may not exist.";
                 }
             }
             catch (Exception ex)
@@ -172,6 +160,7 @@ namespace HealthCareApp.Controllers
                 _logger.LogError(ex, "Error deleting doctor");
                 TempData["ErrorMessage"] = "An error occurred while deleting the doctor.";
             }
+            
             return RedirectToAction("ManageDoctors");
         }
 

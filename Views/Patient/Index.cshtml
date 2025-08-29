@@ -3,19 +3,43 @@
 }
 
 <div class="container-fluid">
-    <div class="row">
+    <!-- Header Section -->
+    <div class="row mb-4">
         <div class="col-12">
-            <h1 class="h3 mb-4 text-gray-800">👤 Patient Dashboard</h1>
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 mb-2 text-gray-800">
+                        <i class="fas fa-user-injured text-success"></i> Patient Dashboard
+                    </h1>
+                    <p class="text-muted mb-0">Welcome back, @Context.Session.GetString("Username")!</p>
+                </div>
+                <div class="text-end">
+                    <small class="text-muted">Today: @DateTime.Now.ToString("dddd, MMMM dd, yyyy")</small>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Welcome Message -->
+    <!-- Welcome Card -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card bg-success text-white shadow">
-                <div class="card-body">
-                    <h5 class="card-title">Welcome, @Context.Session.GetString("Username")!</h5>
-                    <p class="card-text">Manage your health appointments and medical records from your personal dashboard.</p>
+            <div class="card border-0 shadow-lg">
+                <div class="card-body bg-gradient-success  p-4 rounded">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h4 class="card-title mb-2">
+                                <i class="fas fa-heartbeat"></i> Your Health Management Hub
+                            </h4>
+                            <p class="card-text mb-0">
+                                Book appointments, manage medical records, and stay on top of your healthcare journey all in one place.
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="bg-white bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="fas fa-user-md fa-2x text-white"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -96,46 +120,78 @@
         </div>
     </div> -->
 
-    <!-- Quick Actions -->
-    <div class="row mb-4">
+    <!-- Quick Actions Section -->
+    <div class="row mb-5">
         <div class="col-12">
-            <div class="card shadow">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-4 border-bottom">
+                    <h5 class="m-0 font-weight-bold text-dark">
+                        <i class="fas fa-bolt text-warning"></i> Quick Actions
+                    </h5>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-3 mb-3">
-                            <a href="@Url.Action("FindDoctors", "Patient")" class="btn btn-primary btn-block">
-                                <i class="fas fa-search"></i> Find Doctors
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-lg-3 col-md-6">
+                            <a href="@Url.Action("FindDoctors", "Patient")" class="btn btn-primary btn-lg w-100 h-100 d-flex flex-column align-items-center justify-content-center text-decoration-none" style="min-height: 120px;">
+                                <i class="fas fa-search fa-2x mb-3"></i>
+                                <span class="fw-bold">Find Doctors</span>
+                                <small class="text-white-50 mt-1">Search specialists</small>
                             </a>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="@Url.Action("BookAppointment", "Patient")" class="btn btn-success btn-block">
-                                <i class="fas fa-plus"></i> Book Appointment
+                        <div class="col-lg-3 col-md-6">
+                            <a href="@Url.Action("BookAppointment", "Patient")" class="btn btn-success btn-lg w-100 h-100 d-flex flex-column align-items-center justify-content-center text-decoration-none" style="min-height: 120px;">
+                                <i class="fas fa-calendar-plus fa-2x mb-3"></i>
+                                <span class="fw-bold">Book Appointment</span>
+                                <small class="text-white-50 mt-1">Schedule visit</small>
                             </a>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="@Url.Action("MyAppointments", "Patient")" class="btn btn-info btn-block">
-                                <i class="fas fa-calendar"></i> My Appointments
+                        <div class="col-lg-3 col-md-6">
+                            <a href="@Url.Action("MyAppointments", "Patient")" class="btn btn-info btn-lg w-100 h-100 d-flex flex-column align-items-center justify-content-center text-decoration-none" style="min-height: 120px;">
+                                <i class="fas fa-calendar-check fa-2x mb-3"></i>
+                                <span class="fw-bold">My Appointments</span>
+                                <small class="text-white-50 mt-1">View scheduled visits</small>
                             </a>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="@Url.Action("MedicalRecords", "Patient")" class="btn btn-warning btn-block">
-                                <i class="fas fa-file-medical"></i> Medical Records
+                        <div class="col-lg-3 col-md-6">
+                            <a href="@Url.Action("MedicalRecords", "Patient")" class="btn btn-warning btn-lg w-100 h-100 d-flex flex-column align-items-center justify-content-center text-decoration-none" style="min-height: 120px;">
+                                <i class="fas fa-file-medical-alt fa-2x mb-3"></i>
+                                <span class="fw-bold">Medical Records</span>
+                                <small class="text-white-50 mt-1">Health history</small>
                             </a>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="@Url.Action("PayFees", "Patient")" class="btn btn-warning btn-block">
-                                <i class="fas fa-credit-card"></i> Pay Fees
-                            </a>
-                        </div>
-                        <!-- <div class="col-md-3 mb-3">
-                            <a href="@Url.Action("Feedback", "Patient")" class="btn btn-secondary btn-block">
-                                <i class="fas fa-comment-dots"></i> Leave Feedback
-                            </a>
-                        </div> -->
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Actions -->
+    <div class="row mb-5">
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-credit-card fa-2x text-danger"></i>
+                    </div>
+                    <h5 class="card-title">Payment Management</h5>
+                    <p class="card-text text-muted">View payment history and pay outstanding consultation fees online.</p>
+                    <a href="@Url.Action("PayFees", "Patient")" class="btn btn-danger">
+                        <i class="fas fa-money-bill-wave me-1"></i> Manage Payments
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="bg-secondary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-comment-dots fa-2x text-secondary"></i>
+                    </div>
+                    <h5 class="card-title">Feedback & Reviews</h5>
+                    <p class="card-text text-muted">Share your experience and help us improve our healthcare services.</p>
+                    <a href="@Url.Action("Feedback", "Patient")" class="btn btn-secondary">
+                        <i class="fas fa-star me-1"></i> Leave Feedback
+                    </a>
                 </div>
             </div>
         </div>

@@ -6,7 +6,6 @@ CREATE TABLE Users
     UserID INT IDENTITY(1,1) PRIMARY KEY,
     Username NVARCHAR(50) NOT NULL UNIQUE,
     Password NVARCHAR(255) NOT NULL,
-    -- Should be hashed
     UserType NVARCHAR(20) NOT NULL CHECK (UserType IN ('Admin', 'Doctor', 'Patient')),
     IsActive BIT DEFAULT 1,
     CreatedDate DATETIME2 DEFAULT GETDATE()
@@ -140,84 +139,6 @@ VALUES
     ('Branch Office', 'Secondary location'),
     ('Emergency Center', 'Emergency services');
 
--- Create simple views for easy data retrieval
-GO
-CREATE VIEW vw_DoctorList
-AS
-    SELECT
-        d.DoctorID,
-        d.Name AS DoctorName,
-        s.SpecialtyName,
-        l.LocationName,
-        d.ContactNo,
-        d.AvailableTime,
-        d.Fees
-    FROM Doctors d
-        LEFT JOIN Specialties s ON d.SpecialID = s.SpecialID
-        LEFT JOIN Locations l ON d.LocationID = l.LocationID
-        INNER JOIN Users u ON d.UserID = u.UserID
-    WHERE u.IsActive = 1;
-GO
-
-CREATE VIEW vw_AppointmentList
-AS
-    SELECT
-        a.AppointmentID,
-        p.Name AS PatientName,
-        d.Name AS DoctorName,
-        s.SpecialtyName,
-        l.LocationName,
-        a.AppointmentDate,
-        a.AppointmentTime,
-        a.IsCancelled
-    FROM Appointments a
-        INNER JOIN Patients p ON a.PatientID = p.PatientID
-        INNER JOIN Doctors d ON a.DoctorID = d.DoctorID
-        LEFT JOIN Specialties s ON d.SpecialID = s.SpecialID
-        LEFT JOIN Locations l ON a.LocationID = l.LocationID;
-GO
-
--- Create simple stored procedures
-CREATE PROCEDURE sp_UserLogin
-    @Username NVARCHAR(50),
-    @Password NVARCHAR(255)
-AS
-BEGIN
-    SELECT UserID, Username, UserType, IsActive
-    FROM Users
-    WHERE Username = @Username
-        AND Password = @Password
-        AND IsActive = 1;
-END;
-GO
-
-CREATE PROCEDURE sp_GetDoctorsBySpecialty
-    @SpecialtyName NVARCHAR(100) = NULL
-AS
-BEGIN
-    SELECT *
-    FROM vw_DoctorList
-    WHERE (@SpecialtyName IS NULL OR SpecialtyName = @SpecialtyName)
-    ORDER BY DoctorName;
-END;
-GO
-
-CREATE PROCEDURE sp_BookAppointment
-    @PatientID INT,
-    @DoctorID INT,
-    @LocationID INT,
-    @AppointmentDate DATE,
-    @AppointmentTime TIME
-AS
-BEGIN
-    INSERT INTO Appointments
-        (PatientID, DoctorID, LocationID, AppointmentDate, AppointmentTime)
-    VALUES
-        (@PatientID, @DoctorID, @LocationID, @AppointmentDate, @AppointmentTime);
-
-    SELECT SCOPE_IDENTITY() AS AppointmentID;
-END;
-GO
 
 -- Create indexes for performance
 CREATE INDEX IX_Users_Username ON Users(Username);
@@ -395,65 +316,3 @@ VALUES
     (6, 4, 10, 5, 'Wonderful pediatrician, made my child feel comfortable', '2025-07-31 09:30:00'),
     (7, 5, 11, 3, 'Helpful advice for back pain, could use better scheduling', '2025-08-13 04:45:00'),
     (8, 1, 12, 5, 'Always reliable and trustworthy, been seeing for years', '2025-08-19 11:20:00');
-
--- Display summary of seeded data
-PRINT '=== DATA SEEDING COMPLETED ===';
-PRINT '';
-
--- Count and display seeded records
-DECLARE @AdminCount INT, @DoctorCount INT, @PatientCount INT;
-DECLARE @AppointmentCount INT, @PaymentCount INT, @HistoryCount INT, @FeedbackCount INT;
-
-SELECT @AdminCount = COUNT(*)
-FROM Admins;
-SELECT @DoctorCount = COUNT(*)
-FROM Doctors;
-SELECT @PatientCount = COUNT(*)
-FROM Patients;
-SELECT @AppointmentCount = COUNT(*)
-FROM Appointments;
-SELECT @PaymentCount = COUNT(*)
-FROM Payments;
-SELECT @HistoryCount = COUNT(*)
-FROM MedicalHistory;
-SELECT @FeedbackCount = COUNT(*)
-FROM Feedback;
-
-PRINT 'SEEDED DATA SUMMARY:';
-PRINT '-------------------';
-PRINT 'Admins: ' + CAST(@AdminCount AS VARCHAR(10));
-PRINT 'Doctors: ' + CAST(@DoctorCount AS VARCHAR(10));
-PRINT 'Patients: ' + CAST(@PatientCount AS VARCHAR(10));
-PRINT 'Appointments: ' + CAST(@AppointmentCount AS VARCHAR(10));
-PRINT 'Payments: ' + CAST(@PaymentCount AS VARCHAR(10));
-PRINT 'Medical History Records: ' + CAST(@HistoryCount AS VARCHAR(10));
-PRINT 'Feedback Records: ' + CAST(@FeedbackCount AS VARCHAR(10));
-PRINT '';
-
--- Display sample login credentials
-PRINT 'SAMPLE LOGIN CREDENTIALS:';
-PRINT '------------------------';
-PRINT 'ADMIN USERS:';
-PRINT 'Username: admin1, Password: admin123';
-PRINT 'Username: admin2, Password: admin456';
-PRINT '';
-PRINT 'DOCTOR USERS:';
-PRINT 'Username: dr.smith, Password: doc123 (General Medicine)';
-PRINT 'Username: dr.johnson, Password: doc456 (Cardiology)';
-PRINT 'Username: dr.williams, Password: doc789 (Dermatology)';
-PRINT 'Username: dr.brown, Password: doc101 (Pediatrics)';
-PRINT 'Username: dr.davis, Password: doc202 (Orthopedics)';
-PRINT '';
-PRINT 'PATIENT USERS:';
-PRINT 'Username: john.doe, Password: pat123';
-PRINT 'Username: jane.smith, Password: pat456';
-PRINT 'Username: mike.wilson, Password: pat789';
-PRINT 'Username: sarah.johnson, Password: pat101';
-PRINT 'Username: david.lee, Password: pat202';
-PRINT 'Username: emma.taylor, Password: pat303';
-PRINT 'Username: james.white, Password: pat404';
-PRINT 'Username: lisa.anderson, Password: pat505';
-PRINT '';
-
-PRINT 'Simple HealthCare Management System database created and seeded successfully!';
-PRINT 'Database is ready for testing your ASP.NET application!';
