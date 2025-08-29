@@ -20,6 +20,19 @@ namespace HealthCareApp.Models
         
         public DateTime PaymentDate { get; set; } = DateTime.Now;
         
+        // Banking fields for online payment
+        [StringLength(100)]
+        public string? BankName { get; set; }
+        
+        [StringLength(20)]
+        public string? CardNumber { get; set; }
+        
+        [StringLength(7)]
+        public string? ExpiryDate { get; set; }
+        
+        [StringLength(4)]
+        public string? CVN { get; set; }
+        
         // Navigation property
         public Patient Patient { get; set; } = null!;
     }

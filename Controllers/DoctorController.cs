@@ -136,7 +136,16 @@ namespace HealthCareApp.Controllers
             ViewData["Title"] = "Doctor Profile";
             var doctorId = await ResolveDoctorIdFromSessionAsync();
             if (!doctorId.HasValue) return RedirectToAction("Index");
-            var doctor = await _context.Doctors.Include(d => d.Location).Include(d => d.Specialty).FirstOrDefaultAsync(d => d.DoctorID == doctorId.Value);
+            
+            var doctor = await _context.Doctors
+                .Include(d => d.Location)
+                .Include(d => d.Specialty)
+                .FirstOrDefaultAsync(d => d.DoctorID == doctorId.Value);
+            
+            // Get all locations and specialties for dropdowns
+            ViewBag.Locations = await _context.Locations.ToListAsync();
+            ViewBag.Specialties = await _context.Specialties.ToListAsync();
+            
             return View(doctor);
         }
 
@@ -155,7 +164,7 @@ namespace HealthCareApp.Controllers
             doctor.LocationID = model.LocationID;
             doctor.SpecialID = model.SpecialID;
             await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "Profile updated.";
+            TempData["SuccessMessage"] = "Profile updated successfully!";
             return RedirectToAction("Profile");
         }
 
@@ -165,9 +174,18 @@ namespace HealthCareApp.Controllers
             ViewData["Title"] = "Manage Schedule";
             var doctorId = await ResolveDoctorIdFromSessionAsync();
             if (!doctorId.HasValue) return RedirectToAction("Index");
+            
             var doctor = await _context.Doctors.FirstOrDefaultAsync(d => d.DoctorID == doctorId.Value);
             var appointments = await _appointmentService.GetAppointmentsByDoctorAsync(doctorId.Value);
+            
+            // Get existing medical history for each appointment
+            var medicalHistories = await _context.MedicalHistories
+                .Where(mh => mh.DoctorID == doctorId.Value)
+                .ToListAsync();
+            
             ViewBag.Appointments = appointments;
+            ViewBag.MedicalHistories = medicalHistories;
+            
             return View(doctor);
         }
 
@@ -196,6 +214,13 @@ namespace HealthCareApp.Controllers
                     return RedirectToAction("Schedule");
                 }
 
+                var doctorId = await ResolveDoctorIdFromSessionAsync();
+                if (!doctorId.HasValue)
+                {
+                    TempData["ErrorMessage"] = "Doctor session not found.";
+                    return RedirectToAction("Schedule");
+                }
+
                 // Enforce DB max lengths to avoid truncation errors
                 string? safeNotes = notes;
                 if (!string.IsNullOrEmpty(safeNotes) && safeNotes.Length > 1000)
@@ -208,17 +233,36 @@ namespace HealthCareApp.Controllers
                     safeMedicine = safeMedicine.Substring(0, 500);
                 }
 
-                var record = new MedicalHistory
+                // Check if medical record already exists for this patient and appointment date
+                var existingRecord = await _context.MedicalHistories
+                    .FirstOrDefaultAsync(mh => mh.PatientID == appt.PatientID && 
+                                             mh.DoctorID == doctorId.Value && 
+                                             mh.RecordDate.Date == appt.AppointmentDate.Date);
+
+                if (existingRecord != null)
                 {
-                    PatientID = appt.PatientID,
-                    DoctorID = appt.DoctorID,
-                    RecordDate = DateTime.Today,
-                    Notes = safeNotes,
-                    Medicine = safeMedicine
-                };
-                await _context.MedicalHistories.AddAsync(record);
+                    // Update existing record
+                    existingRecord.Notes = safeNotes;
+                    existingRecord.Medicine = safeMedicine;
+                    existingRecord.RecordDate = DateTime.Now;
+                    _context.MedicalHistories.Update(existingRecord);
+                }
+                else
+                {
+                    // Create new record
+                    var record = new MedicalHistory
+                    {
+                        PatientID = appt.PatientID,
+                        DoctorID = doctorId.Value,
+                        RecordDate = DateTime.Now,
+                        Notes = safeNotes,
+                        Medicine = safeMedicine
+                    };
+                    await _context.MedicalHistories.AddAsync(record);
+                }
+
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Consultation notes saved.";
+                TempData["SuccessMessage"] = "Consultation notes saved successfully!";
             }
             catch (Exception ex)
             {

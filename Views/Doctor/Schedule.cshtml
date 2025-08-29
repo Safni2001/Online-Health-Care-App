@@ -2,37 +2,62 @@
 @{
     ViewData["Title"] = "Manage Schedule";
     var appts = ViewBag.Appointments as List<HealthCareApp.Models.Appointment> ?? new List<HealthCareApp.Models.Appointment>();
+    var medicalHistories = ViewBag.MedicalHistories as List<HealthCareApp.Models.MedicalHistory> ?? new List<HealthCareApp.Models.MedicalHistory>();
 }
 
 <div class="container-fluid">
-    <div class="row">
+    <!-- Header Section -->
+    <div class="row mb-4">
         <div class="col-12">
-            <h1 class="h3 mb-4 text-gray-800">🗓 Manage Schedule</h1>
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 mb-2 text-gray-800">
+                        <i class="fas fa-calendar-check text-primary"></i> Manage Schedule
+                    </h1>
+                    <p class="text-muted mb-0">View appointments and add consultation notes</p>
+                </div>
+                <a href="@Url.Action("Index", "Doctor")" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
         </div>
     </div>
 
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
+            <i class="fas fa-check-circle text-success"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
+            <i class="fas fa-exclamation-triangle text-danger"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
     <div class="row">
-        <!-- Availability card hidden by user previously; leave structure ready -->
-        <!-- <div class="col-lg-5"> -->
-        <!-- Keep commented per user's change -->
-        <!-- </div> -->
-        <div class="col-lg-12">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Upcoming Appointments</h6>
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-gradient-primary text-white py-4">
+                    <h5 class="m-0 font-weight-bold">
+                        <i class="fas fa-calendar-alt"></i> Your Upcoming Appointments
+                    </h5>
                 </div>
                 <div class="card-body">
                     @if (appts.Any())
                     {
                         <div class="table-responsive">
-                            <table class="table table-bordered align-middle">
-                                <thead>
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
                                     <tr>
-                                        <th>Date</th>
-                                        <th>Time</th>
-                                        <th>Patient</th>
-                                        <th>Reschedule</th>
-                                        <th>Consultation Notes / Prescription</th>
+                                        <th class="border-0 py-3"><i class="fas fa-calendar text-primary me-2"></i>Date</th>
+                                        <th class="border-0 py-3"><i class="fas fa-clock text-success me-2"></i>Time</th>
+                                        <th class="border-0 py-3"><i class="fas fa-user-injured text-info me-2"></i>Patient</th>
+                                        <th class="border-0 py-3"><i class="fas fa-edit text-warning me-2"></i>Reschedule</th>
+                                        <th class="border-0 py-3"><i class="fas fa-notes-medical text-danger me-2"></i>Consultation Notes / Prescription</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -42,38 +67,86 @@
                                         var timeId = $"newTime_{a.AppointmentID}";
                                         var notesId = $"notes_{a.AppointmentID}";
                                         var rxId = $"medicine_{a.AppointmentID}";
-                                        <tr>
-                                            <td>@a.AppointmentDate.ToString("yyyy-MM-dd")</td>
-                                            <td>@(a.AppointmentTime)</td>
-                                            <td>@a.Patient?.Name</td>
-                                            <td>
-                                                <form asp-action="RescheduleAppointment" method="post" class="d-inline">
-                                                    <input type="hidden" name="appointmentId" value="@a.AppointmentID" />
-                                                    <div class="mb-1">
-                                                        <label for="@dateId" class="form-label">Date</label>
-                                                        <input id="@dateId" type="date" name="newDate" class="form-control form-control-sm" value="@a.AppointmentDate.ToString("yyyy-MM-dd")" />
+                                        
+                                        // Find existing medical history for this patient and appointment date
+                                        var existingHistory = medicalHistories.FirstOrDefault(mh => 
+                                            mh.PatientID == a.PatientID && 
+                                            mh.RecordDate.Date == a.AppointmentDate.Date);
+                                        
+                                        <tr class="border-bottom">
+                                            <td class="py-4">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-primary bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                        <i class="fas fa-calendar-day text-primary"></i>
                                                     </div>
-                                                    <div class="mb-2">
-                                                        <label for="@timeId" class="form-label">Time</label>
-                                                        <input id="@timeId" type="time" name="newTime" class="form-control form-control-sm" />
+                                                    <div>
+                                                        <div class="fw-bold">@a.AppointmentDate.ToString("MMM dd, yyyy")</div>
+                                                        <small class="text-muted">@a.AppointmentDate.ToString("dddd")</small>
                                                     </div>
-                                                    <button type="submit" class="btn btn-sm btn-warning">Reschedule</button>
-                                                </form>
-                                               
+                                                </div>
                                             </td>
-                                            <td>
-                                                <form asp-action="UpdateConsultationNotes" method="post">
-                                                    <input type="hidden" name="appointmentId" value="@a.AppointmentID" />
-                                                    <div class="mb-2">
-                                                        <label for="@notesId" class="form-label">Notes</label>
-                                                        <textarea id="@notesId" name="notes" class="form-control" rows="4" placeholder="Enter consultation notes..."></textarea>
+                                            <td class="py-4">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-success bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                        <i class="fas fa-clock text-success"></i>
                                                     </div>
-                                                    <div class="mb-2">
-                                                        <label for="@rxId" class="form-label">Prescription</label>
-                                                        <textarea id="@rxId" name="medicine" class="form-control" rows="3" placeholder="Enter prescription details..."></textarea>
+                                                    <div class="fw-bold">@a.AppointmentTime.ToString(@"hh\:mm")</div>
+                                                </div>
+                                            </td>
+                                            <td class="py-4">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-info bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                        <i class="fas fa-user text-info"></i>
                                                     </div>
-                                                    <button type="submit" class="btn btn-sm btn-info">Save</button>
-                                                </form>
+                                                    <div>
+                                                        <div class="fw-bold">@a.Patient?.Name</div>
+                                                        <small class="text-muted">Patient ID: @a.PatientID</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-4">
+                                                <div class="card border-0 shadow-sm">
+                                                    <div class="card-body p-3">
+                                                        <form asp-action="RescheduleAppointment" method="post">
+                                                            <input type="hidden" name="appointmentId" value="@a.AppointmentID" />
+                                                            <div class="mb-2">
+                                                                <label for="@dateId" class="form-label fw-bold">New Date</label>
+                                                                <input id="@dateId" type="date" name="newDate" class="form-control form-control-sm" value="@a.AppointmentDate.ToString("yyyy-MM-dd")" />
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="@timeId" class="form-label fw-bold">New Time</label>
+                                                                <input id="@timeId" type="time" name="newTime" class="form-control form-control-sm" />
+                                                            </div>
+                                                            <button type="submit" class="btn btn-warning btn-sm w-100">
+                                                                <i class="fas fa-calendar-alt me-1"></i> Reschedule
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-4">
+                                                <div class="card border-0 shadow-sm">
+                                                    <div class="card-body p-3">
+                                                        <form asp-action="UpdateConsultationNotes" method="post">
+                                                            <input type="hidden" name="appointmentId" value="@a.AppointmentID" />
+                                                            <div class="mb-3">
+                                                                <label for="@notesId" class="form-label fw-bold">
+                                                                    <i class="fas fa-sticky-note text-primary me-1"></i> Consultation Notes
+                                                                </label>
+                                                                <textarea id="@notesId" name="notes" class="form-control" rows="3" placeholder="Enter consultation notes...">@(existingHistory?.Notes ?? "")</textarea>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="@rxId" class="form-label fw-bold">
+                                                                    <i class="fas fa-prescription-bottle-alt text-success me-1"></i> Prescription
+                                                                </label>
+                                                                <textarea id="@rxId" name="medicine" class="form-control" rows="3" placeholder="Enter prescription details...">@(existingHistory?.Medicine ?? "")</textarea>
+                                                            </div>
+                                                            <button type="submit" class="btn @(existingHistory != null ? "btn-info" : "btn-success") btn-sm w-100">
+                                                                <i class="fas fa-save me-1"></i> @(existingHistory != null ? "Update Notes" : "Save Notes")
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
                                             </td>
                                         </tr>
                                     }
@@ -83,9 +156,15 @@
                     }
                     else
                     {
-                        <div class="text-center text-muted py-4">
-                            <i class="fas fa-calendar-times fa-3x mb-3"></i>
-                            <p>No upcoming appointments</p>
+                        <div class="text-center py-5">
+                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 100px; height: 100px;">
+                                <i class="fas fa-calendar-times fa-3x text-muted"></i>
+                            </div>
+                            <h5 class="text-muted mb-2">No Upcoming Appointments</h5>
+                            <p class="text-muted mb-4">You don't have any appointments scheduled at the moment.</p>
+                            <a href="@Url.Action("Index", "Doctor")" class="btn btn-primary">
+                                <i class="fas fa-home me-1"></i> Back to Dashboard
+                            </a>
                         </div>
                     }
                 </div>

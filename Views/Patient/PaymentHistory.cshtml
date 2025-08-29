@@ -1,0 +1,235 @@
+@model List<dynamic>
+@{
+    ViewData["Title"] = "Payment History";
+    var paymentHistory = Model ?? new List<dynamic>();
+}
+
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 mb-2 text-gray-800">
+                        <i class="fas fa-history text-info"></i> Payment History
+                    </h1>
+                    <p class="text-muted mb-0">Complete transaction history for @ViewBag.PatientName</p>
+                </div>
+                <div>
+                    <a href="@Url.Action("PayFees", "Patient")" class="btn btn-primary me-2">
+                        <i class="fas fa-credit-card"></i> Pay Fees
+                    </a>
+                    <a href="@Url.Action("Index", "Patient")" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
+            <i class="fas fa-check-circle text-success"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Payment History Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-gradient-info text-white py-4">
+            <h5 class="m-0 font-weight-bold">
+                <i class="fas fa-list-ul"></i> All Payment Transactions
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            @if (paymentHistory != null && paymentHistory.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="border-0 py-3"><i class="fas fa-hashtag text-primary me-2"></i>Transaction ID</th>
+                                <th class="border-0 py-3"><i class="fas fa-calendar text-primary me-2"></i>Date</th>
+                                <th class="border-0 py-3"><i class="fas fa-receipt text-info me-2"></i>Booking ID</th>
+                                <th class="border-0 py-3"><i class="fas fa-user-md text-success me-2"></i>Doctor</th>
+                                <th class="border-0 py-3"><i class="fas fa-calendar-check text-warning me-2"></i>Appointment</th>
+                                <th class="border-0 py-3"><i class="fas fa-dollar-sign text-success me-2"></i>Amount</th>
+                                <th class="border-0 py-3"><i class="fas fa-info-circle text-secondary me-2"></i>Status</th>
+                                <th class="border-0 py-3"><i class="fas fa-credit-card text-danger me-2"></i>Payment Method</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in paymentHistory)
+                            {
+                                if (item == null || item.Payment == null)
+                                {
+                                    continue;
+                                }
+                                var payment = (HealthCareApp.Models.Payment)item.Payment;
+                                var doctorName = item.DoctorName as string ?? "N/A";
+                                DateTime? apptDate = item.AppointmentDate as DateTime?;
+                                <tr class="border-bottom">
+                                    <td class="py-4">
+                                        <div class="fw-bold text-primary">#@payment.PaymentID</div>
+                                    </td>
+                                    <td class="py-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                <i class="fas fa-calendar-day text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold">@payment.PaymentDate.ToString("MMM dd, yyyy")</div>
+                                                <small class="text-muted">@payment.PaymentDate.ToString("hh:mm tt")</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-info bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                <i class="fas fa-hashtag text-info"></i>
+                                            </div>
+                                            <div class="fw-bold">@(payment.BookingRef ?? "N/A")</div>
+                                        </div>
+                                    </td>
+                                    <td class="py-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-success bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                <i class="fas fa-user-md text-success"></i>
+                                            </div>
+                                            <div class="fw-bold">@doctorName</div>
+                                        </div>
+                                    </td>
+                                    <td class="py-4">
+                                        @if (apptDate.HasValue)
+                                        {
+                                            <div class="fw-bold">@apptDate.Value.ToString("MMM dd, yyyy")</div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">N/A</span>
+                                        }
+                                    </td>
+                                    <td class="py-4">
+                                        <div class="fw-bold text-success fs-5">Rs.@payment.Amount</div>
+                                    </td>
+                                    <td class="py-4">
+                                        @if (payment.PaymentStatus == "Completed")
+                                        {
+                                            <span class="badge bg-success px-3 py-2">
+                                                <i class="fas fa-check-circle me-1"></i> Completed
+                                            </span>
+                                        }
+                                        else if (payment.PaymentStatus == "Pending")
+                                        {
+                                            <span class="badge bg-warning px-3 py-2">
+                                                <i class="fas fa-clock me-1"></i> Pending
+                                            </span>
+                                        }
+                                        else if (payment.PaymentStatus == "Failed")
+                                        {
+                                            <span class="badge bg-danger px-3 py-2">
+                                                <i class="fas fa-times-circle me-1"></i> Failed
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="py-4">
+                                        @if (!string.IsNullOrEmpty(payment.BankName))
+                                        {
+                                            <div class="fw-bold">@payment.BankName</div>
+                                            @if (!string.IsNullOrEmpty(payment.CardNumber))
+                                            {
+                                                <small class="text-muted">****-****-****-@payment.CardNumber.Substring(Math.Max(0, payment.CardNumber.Length - 4))</small>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Cash/Other</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 100px; height: 100px;">
+                        <i class="fas fa-receipt fa-3x text-muted"></i>
+                    </div>
+                    <h5 class="text-muted mb-2">No Payment History Found</h5>
+                    <p class="text-muted mb-4">Your payment transactions will appear here once you make payments.</p>
+                    <a href="@Url.Action("PayFees", "Patient")" class="btn btn-primary">
+                        <i class="fas fa-credit-card me-1"></i> Make Payment
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Summary Section -->
+    @if (paymentHistory != null && paymentHistory.Count > 0)
+    {
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <i class="fas fa-check-circle fa-2x text-success"></i>
+                        </div>
+                        <h4 class="text-success mb-1">Rs.@{
+                            decimal totalPaid = 0;
+                            foreach(var item in paymentHistory) {
+                                if (item == null || item.Payment == null) { continue; }
+                                var p = (HealthCareApp.Models.Payment)item.Payment;
+                                if(p.PaymentStatus == "Completed") {
+                                    totalPaid += p.Amount;
+                                }
+                            }
+                        }@totalPaid</h4>
+                        <p class="text-muted mb-0">Total Paid</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <i class="fas fa-clock fa-2x text-warning"></i>
+                        </div>
+                        <h4 class="text-warning mb-1">Rs.@{
+                            decimal totalPending = 0;
+                            foreach(var item in paymentHistory) {
+                                if (item == null || item.Payment == null) { continue; }
+                                var p = (HealthCareApp.Models.Payment)item.Payment;
+                                if(p.PaymentStatus == "Pending") {
+                                    totalPending += p.Amount;
+                                }
+                            }
+                        }@totalPending</h4>
+                        <p class="text-muted mb-0">Pending Amount</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <i class="fas fa-list fa-2x text-info"></i>
+                        </div>
+                        <h4 class="text-info mb-1">@{
+                            int totalCount = 0;
+                            foreach(var item in paymentHistory) {
+                                if (item == null || item.Payment == null) { continue; }
+                                totalCount++;
+                            }
+                        }@totalCount</h4>
+                        <p class="text-muted mb-0">Total Transactions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
